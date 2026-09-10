@@ -3,7 +3,7 @@ export const DEFAULT_REGION: Region = { cx: .5, cy: .56, rx: .435, ry: .32 };
 export type ImageFraming = { zoom: number; panX: number; panY: number };
 export type ToyImage = { src: string; region: Region; custom: boolean; original?: ImageFraming & { src: string } };
 export const DEFAULT_IMAGE: ToyImage = { src: '/peach.png', region: DEFAULT_REGION, custom: false };
-export const MODEL_IMAGE: ToyImage = { src: '/model-jeans.png', region: { cx: .49, cy: .44, rx: .095, ry: .065 }, custom: false };
+export const SHORTS_IMAGE: ToyImage = { src: '/shorts.png', region: { cx: .5, cy: .44, rx: .35, ry: .23 }, custom: false };
 export const clamp = (v: number, min = 0, max = 1) => Math.max(min, Math.min(max, v));
 export function cropPlacement(width: number, height: number, zoom: number, panX: number, panY: number) {
   if (!(width > 0 && height > 0)) throw new Error('图片尺寸无效');

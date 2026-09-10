@@ -4,7 +4,7 @@ import { Hand, Volume2, VolumeX, RotateCcw, ArrowUpRight, ArrowRight, Sparkles, 
 import { Slider } from '@/components/ui/slider';
 import { PeachToy, type ToyHandle } from './peach-toy';
 import { ImageCustomizer } from './image-customizer';
-import { DEFAULT_IMAGE, MODEL_IMAGE, type ToyImage } from '@/lib/image-settings';
+import { DEFAULT_IMAGE, SHORTS_IMAGE, type ToyImage } from '@/lib/image-settings';
 import { imageKind, trackEvent } from '@/lib/analytics';
 import { LocaleProvider, useI18n } from './i18n';
 import { normalizeLocale } from '@/lib/locale';
@@ -65,7 +65,7 @@ function Game() {
       <section className="game" aria-label={t.game}>
         <div className="intro"><div className="eyebrow"><span /> {t.eyebrow}</div><h1>{t.headline}<span>{t.headlineAccent}</span></h1><p>{t.intro}</p></div>
         <div className="scoreboard"><span className="score-label">{t.score}</span><div className="score-number">{String(count).padStart(3, '0')}{t.scoreUnit && <span>{t.scoreUnit}</span>}</div><div className="best">{t.best} <b>{best}</b></div></div>
-        <div className={`toy-area ${stage === 1 ? 'model-view' : ''}`}>
+        <div className="toy-area">
           <div className="soft-stamp" aria-hidden="true">100%<span>{t.stamp}</span><Sparkles size={16} /></div>
           <PeachToy key={toyImage.src} ref={toy} softness={softness} sound={sound} onHit={recordHit} image={toyImage} />
           <div className={`combo ${combo > 1 ? 'visible' : ''}`} aria-live="off"><span>{t.combo}</span><strong>×{combo}</strong><em>{combo >= 10 ? t.comboGreat : combo >= 5 ? t.comboGood : t.comboStart}</em></div>
@@ -76,7 +76,7 @@ function Game() {
           <ol className="experience-steps">
             {[t.stepPeach, t.stepModel, t.stepUpload].map((label, index) => <li key={label} className={index === stage ? 'active' : index < stage ? 'done' : ''} aria-current={index === stage ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}
           </ol>
-          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(MODEL_IMAGE)}>{t.tryModel}<ArrowRight size={15} /></button> : <ImageCustomizer key={toyImage.src} current={toyImage} onApply={changeImage} secondaryActions={<div className="experience-back"><button className="image-text-button" onClick={() => changeImage(DEFAULT_IMAGE)}>{t.backPeach}</button>{stage === 2 && <button className="image-text-button" onClick={() => changeImage(MODEL_IMAGE)}>{t.backModel}</button>}</div>} />}
+          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(SHORTS_IMAGE)}>{t.tryModel}<ArrowRight size={15} /></button> : <ImageCustomizer key={toyImage.src} current={toyImage} onApply={changeImage} secondaryActions={<div className="experience-back"><button className="image-text-button" onClick={() => changeImage(DEFAULT_IMAGE)}>{t.backPeach}</button>{stage === 2 && <button className="image-text-button" onClick={() => changeImage(SHORTS_IMAGE)}>{t.backModel}</button>}</div>} />}
         </section>
         <div className="controls">
           <div className="soft-control"><div className="control-title"><span>{t.softness}</span><span className="soft-value">{softness < 35 ? t.firmValue : softness < 75 ? t.mediumValue : t.softValue}</span></div><div className="slider-row"><span>{t.firm}</span><Slider aria-label={t.softness} min={0} max={100} value={[softness]} onValueChange={v => setSoftness(Array.isArray(v) ? v[0] : v)} onValueCommitted={v => trackEvent('softness_change', { value: Array.isArray(v) ? v[0] : v })} /><span>{t.soft}</span></div></div>
