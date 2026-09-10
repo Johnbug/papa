@@ -32,6 +32,6 @@ export const en: Messages = {
   invalidType: 'Please choose a JPG, PNG, or WebP image.', emptyFile: 'This image file is empty. Please choose another.', oversizedFile: 'This image is larger than 20 MB. Please choose a smaller one.',
   invalidDimensions: 'This image has invalid dimensions. Please choose another.', oversizedDimensions: 'This image’s resolution is too high. Please resize it and try again.', decodeFailed: 'We couldn’t read this image. Please try a JPG, PNG, or WebP file.',
   regionTooSmall: 'This area is too small. Please select a slightly larger one.', canvasUnavailable: 'Your browser can’t process the image right now. Please try again.', applyFailed: 'We couldn’t process this image. Please try another.',
-  toyLabel: 'Click and release to tap, or hold or drag to squish. You can also press Space or Enter to tap.', customAlt: 'Your selected custom image', peachAlt: 'A soft, squishy pink peach', modelAlt: 'Rear view of a fictional adult woman wearing opaque pink athletic shorts',
+  toyLabel: 'Click and release to tap, or hold or drag to squish. You can also press Space or Enter to tap.', customAlt: 'Your selected custom image', peachAlt: 'A soft, squishy pink peach', modelAlt: 'Full-length rear three-quarter view of a fictional adult woman in blue jeans, a cream shirt, and white sneakers',
   hit1: 'Pat!', hit2: 'Pop!', hit3: 'Squish!', hit4: 'PAP!',
 };
