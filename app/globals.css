@@ -9,22 +9,22 @@ button, a, input { -webkit-tap-highlight-color: transparent; }
 button { cursor: pointer; font: inherit; }
 button:focus-visible, a:focus-visible { outline: 3px solid #db5264; outline-offset: 5px; }
 .playground { min-height: 100svh; display: flex; flex-direction: column; padding: 0 4.2vw; background: radial-gradient(ellipse at 50% 52%, #fff8f2 0, #fff3ee 57%, #fde7e3 100%); overflow: hidden; }
-.topbar { height: 102px; display: flex; align-items: center; border-bottom: 1px solid #e5bfb74f; gap: 21px; z-index: 2; }
-.brand { color: #d95765; text-decoration: none; font-family: Georgia, serif; font-style: italic; font-weight: 900; font-size: 52px; letter-spacing: -5px; line-height: 1; }
-.brand span { font-family: Arial, sans-serif; font-size: 13px; letter-spacing: 0; vertical-align: top; margin-left: 6px; font-style: normal; }
-.brand-caption { border-left: 1px solid #dbaaa05c; padding-left: 21px; font-size: 16px; font-weight: 600; letter-spacing: 3px; }
-.brand-caption span { display: block; margin-top: 7px; font-size: 10px; letter-spacing: 1.7px; color: #a06c66; font-weight: 400; }
+.topbar { height: 64px; flex-shrink: 0; display: flex; align-items: center; border-bottom: 1px solid #e5bfb74f; gap: 16px; z-index: 2; }
+.brand { color: #d95765; text-decoration: none; font-family: Georgia, serif; font-style: italic; font-weight: 900; font-size: 38px; letter-spacing: -3.5px; line-height: 1; }
+.brand span { font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 0; vertical-align: top; margin-left: 6px; font-style: normal; }
+.brand-caption { border-left: 1px solid #dbaaa05c; padding-left: 16px; font-size: 13px; font-weight: 600; letter-spacing: 3px; }
+.brand-caption span { display: block; margin-top: 4px; font-size: 8px; letter-spacing: 1.4px; color: #a06c66; font-weight: 400; }
 .top-note { margin-left: auto; font-size: 13px; color: #8f6862; display: flex; align-items: center; gap: 9px; }
 .live-dot { height: 6px; width: 6px; border-radius: 50%; background: #a3ad6b; box-shadow: 0 0 0 4px #acb77312; }
 .icon-button { height: 42px; width: 42px; border: 1px solid #dfbfb769; border-radius: 50%; display: grid; place-items: center; background: #fff9f566; color: #956861; }
-.game { flex: 1; min-height: 685px; position: relative; display: flex; align-items: center; flex-direction: column; padding-top: 30px; }
-.intro { position: absolute; top: 64px; left: 2.5vw; z-index: 2; pointer-events: none; }
+.game { flex: 1; min-height: 685px; position: relative; display: flex; align-items: center; flex-direction: column; padding-top: 18px; }
+.intro { position: absolute; top: 44px; left: 2.5vw; z-index: 2; pointer-events: none; }
 .eyebrow { font-size: 10px; letter-spacing: 1.6px; color: #a77970; display: flex; align-items: center; gap: 8px; }
 .eyebrow>span { width: 14px; height: 1px; background: #b78b7e; }
 h1 { font-size: clamp(25px, 2.55vw, 42px); font-weight: 500; line-height: 1.55; letter-spacing: -1.4px; margin: 21px 0 16px; }
 h1>span { display: block; color: #d95b6c; font-weight: 650; }
 .intro p { font-size: 14px; color: #a47b73; letter-spacing: 1px; }
-.scoreboard { position: absolute; top: 69px; right: 3vw; text-align: right; z-index: 2; }
+.scoreboard { position: absolute; top: 49px; right: 3vw; text-align: right; z-index: 2; }
 .score-label { font-size: 13px; color: #a17973; letter-spacing: 2px; }
 .score-number { font-size: 64px; letter-spacing: -3px; font-weight: 300; line-height: 1.4; color: #d16170; font-variant-numeric: tabular-nums; }
 .score-number>span { font-size: 14px; letter-spacing: 0; margin-left: 10px; color: #ab7873; }
@@ -127,5 +127,5 @@ footer>span:last-child { font-size: 9px; letter-spacing: 1.5px; display: flex; a
 @keyframes ring { to { scale: 2.2; opacity: 0; } }
 @media(min-width:1450px) { .game { justify-content: center; } .toy-area { width: min(650px, 58vh); } }
 @media(max-width:900px) { .intro { left: 0; top: 42px; } h1 { font-size: 27px; } .intro p { max-width: 130px; line-height: 1.8; } .eyebrow { font-size: 8px; max-width: 150px; line-height: 1.6; } .scoreboard { right: 0; top: 47px; } .score-number { font-size: 48px; } .toy-area { margin-top: 85px; width: min(540px, 78vw); } .game { min-height: 690px; } .soft-stamp { top: 21%; left: 5px; width: 66px; height: 66px; } }
-@media(max-width:600px) { .playground { padding: 0 22px; } .topbar { height: 81px; gap: 15px; } .brand { font-size: 45px; } .brand-caption { font-size: 13px; padding-left: 16px; letter-spacing: 2px; } .brand-caption span { font-size: 8px; letter-spacing: .8px; } .top-note { display: none; } .top-sound { margin-left: auto; width: 36px; height: 36px; } .game { min-height: 0; padding-top: 0; } .intro { top: 30px; } .eyebrow { max-width: none; font-size: 8px; letter-spacing: 1px; } h1 { font-size: 25px; letter-spacing: -.6px; line-height: 1.4; margin-top: 15px; margin-bottom: 12px; } .intro p { max-width: none; font-size: 11px; letter-spacing: 0; } .scoreboard { top: 47px; } .score-label { font-size: 11px; } .score-number { font-size: 43px; } .best { font-size: 10px; } .toy-area { width: calc(100vw - 12px); margin-top: 172px; margin-bottom: 4px; } .soft-stamp { top: 6%; left: 9%; width: 61px; height: 61px; font-size: 16px; } .soft-stamp span { font-size: 8px; } .touch-note { right: 8%; bottom: 7%; font-size: 11px; } .touch-note svg { width: 25px; } .combo { right: 8%; top: 20%; } .combo strong { font-size: 45px; } .play-hint { font-size: 10px; gap: 6px; margin-bottom: 24px; } .play-hint i { margin: 0 5px; } .controls { border-radius: 19px; padding: 17px 18px; gap: 15px; margin-bottom: 27px; } .control-title { font-size: 12px; } .slider-row { gap: 8px; } .control-button span { font-size: 10px; } footer { padding: 15px 0; min-height: 50px; justify-content: center; font-size: 10px; } footer>span:last-child { display: none; } }
+@media(max-width:600px) { .playground { padding: 0 22px; } .topbar { height: 54px; gap: 12px; } .brand { font-size: 34px; } .brand-caption { font-size: 12px; padding-left: 12px; letter-spacing: 2px; } .brand-caption span { font-size: 8px; letter-spacing: .8px; } .top-note { display: none; } .top-sound { margin-left: auto; width: 36px; height: 36px; } .game { min-height: 0; padding-top: 0; } .intro { top: 20px; } .eyebrow { max-width: none; font-size: 8px; letter-spacing: 1px; } h1 { font-size: 25px; letter-spacing: -.6px; line-height: 1.4; margin-top: 15px; margin-bottom: 12px; } .intro p { max-width: none; font-size: 11px; letter-spacing: 0; } .scoreboard { top: 29px; } .score-label { font-size: 11px; } .score-number { font-size: 43px; } .best { font-size: 10px; } .toy-area { width: calc(100vw - 12px); margin-top: 150px; margin-bottom: 4px; } .soft-stamp { top: 6%; left: 9%; width: 61px; height: 61px; font-size: 16px; } .soft-stamp span { font-size: 8px; } .touch-note { right: 8%; bottom: 7%; font-size: 11px; } .touch-note svg { width: 25px; } .combo { right: 8%; top: 20%; } .combo strong { font-size: 45px; } .play-hint { font-size: 10px; gap: 6px; margin-bottom: 24px; } .play-hint i { margin: 0 5px; } .controls { border-radius: 19px; padding: 17px 18px; gap: 15px; margin-bottom: 27px; } .control-title { font-size: 12px; } .slider-row { gap: 8px; } .control-button span { font-size: 10px; } footer { padding: 15px 0; min-height: 50px; justify-content: center; font-size: 10px; } footer>span:last-child { display: none; } }
 @media(prefers-reduced-motion:reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
