@@ -77,7 +77,7 @@ function Game() {
           <ol className="experience-steps">
             {[t.stepPeach, t.stepModel, t.stepUpload].map((label, index) => <li key={label} className={index === stage ? 'active' : index < stage ? 'done' : ''} aria-current={index === stage ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}
           </ol>
-          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(PINK_IMAGE)}>{t.tryModel}<ArrowRight size={15} /></button> : <>
+          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(MODEL_IMAGE)}>{t.tryModel}<ArrowRight size={15} /></button> : <>
             <div className="model-options" role="group" aria-label={t.chooseModel}>
               {[{ image: PINK_IMAGE, label: t.pinkModel, color: 'pink' }, { image: MODEL_IMAGE, label: t.denimModel, color: 'denim' }].map(({ image, label, color }) => <button key={image.src} className="model-option" aria-pressed={toyImage.src === image.src} onClick={() => { if (toyImage.src !== image.src) changeImage(image); }}><span className={`model-swatch ${color}`} aria-hidden="true" />{label}</button>)}
             </div>
