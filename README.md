@@ -1,6 +1,6 @@
 # PAPA · 拍拍蜜桃
 
-A small Chinese-language stress-relief game. Each visit starts with a soft peach and a photoreal transparent hand pointer. A three-step guide invites users to try the peach, switch to an adult fashion mannequin in opaque pink shorts, then upload their own image. Switching is always explicit, and users can return to the peach at any time. Click and release to pat, hold or drag to knead, or focus the toy and press Space / Enter. Pointer down never counts or plays a slap; a movement beyond 8 pixels or a hold of 180 milliseconds enters kneading until release. Adjust softness, mute synthesized audio, or reset the session score.
+A small stress-relief game in Chinese, English, and Japanese. Each visit starts with a soft peach and a photoreal transparent hand pointer. A compact three-step guide invites users to try the peach, switch to an adult fashion mannequin in opaque pink shorts, then upload their own image. Switching is always explicit, and users can return to the peach at any time. Click and release to pat, hold or drag to knead, or focus the toy and press Space / Enter. Pointer down never counts or plays a slap; a movement beyond 8 pixels or a hold of 180 milliseconds enters kneading until release. Adjust softness, mute synthesized audio, or reset the session score.
 
 The generated artwork is deformed using a WebGL mesh with localized damped impulses. Impacts are bounded, fade to rest, and stop rendering once settled. Touch input, keyboard interaction, reduced-motion preferences, and an image fallback are supported. Scores stay in the current session.
 
@@ -8,7 +8,7 @@ The generated artwork is deformed using a WebGL mesh with localized damped impul
 
 After choosing “试试臀部图片”, use “上传自己的图片” to choose a JPG, PNG, or WebP (up to 20 MB and 40 megapixels). The local editor supports cover cropping with drag/zoom and an elliptical interaction region, adjustable through dragging or keyboard-accessible sliders. Apply the image to play, re-edit it using the retained original and framing, or return to either built-in image. Changing images resets the score. Deformation and kneading follow the selected region and leave the background fixed.
 
-Files are decoded and cropped entirely in the browser, with no upload requests or browser persistence. Original and rendered object URLs are released on replacement, restoration, cancellation, or unmount. Refreshing clears the custom image. Unsupported or undecodable files preserve the existing playable image.
+Files are decoded and cropped entirely in the browser, with no upload requests or browser persistence. Original and rendered object URLs are released on replacement, restoration, cancellation, or unmount. Refreshing clears the custom image. Only language and analytics preferences are saved locally; images are never persisted. Unsupported or undecodable files preserve the existing playable image.
 
 ## Development
 
@@ -37,6 +37,14 @@ npm run preview:vercel
 
 Use `npm run dev:vercel` for the Vite development server. User-selected images remain entirely in the browser and are never included in deployment output.
 
+## Languages and release readiness
+
+The header switches between 中文, English, and 日本語. Language resolution uses the `lang` query parameter (`zh`, `en`, or `ja`), then a saved manual choice, then browser languages, with English as the unsupported-language fallback. Changing language preserves the current image and score and updates `html.lang`, the page title, and description. UI copy, editor instructions, error messages, and accessible labels are localized. Static crawler metadata remains Chinese; dedicated localized SEO pages are not yet configured.
+
+The footer includes localized privacy/use information and an analytics opt-out. Language and analytics preferences are stored in the browser when available. Opt-out blocks future custom events and the SDK's page/custom event middleware; it does not retract previously sent events or prevent downloading the analytics script itself. Storage failures fall back to the current page preference, and successful persisted choices are shared across tabs.
+
+See [the release checklist](docs/release-checklist.md) for completed changes and the production/device checks still required.
+
 ### Vercel Web Analytics
 
 The Vercel React entry includes `@vercel/analytics/react` for visitor and page-view statistics. Enable **Web Analytics** in the Vercel project dashboard, deploy the latest commit, and visit the site to begin collecting data. No analytics keys or additional environment variables are needed.
@@ -59,6 +67,7 @@ Analytics is initialized only in the Vercel entry. Custom events require a Verce
 | `softness_change` | Committed slider value; does not emit for every drag movement. |
 | `game_reset` | Explicit reset button; current image category. Automatic resets during image changes do not emit this event. |
 | `home_click` | Brand/home link; current image category. |
+| `language_change` | Manual language change; fixed `from` / `to` language codes. |
 
 Each completed pat or knead emits one event without sampling. Input methods distinguish mouse, touch, pen, keyboard, and the optional agent action, so automated actions can be filtered out. Analytics errors are isolated from gameplay. Local Vercel development uses the SDK's debug mode; production collection and dashboard delivery still need verification on the deployed project.
 

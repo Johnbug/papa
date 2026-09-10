@@ -1,9 +1,12 @@
 import { track } from '@vercel/analytics';
 import { DEFAULT_IMAGE, type ToyImage } from './image-settings.ts';
+import { shouldSendAnalytics } from './analytics-preferences.ts';
+import type { Locale } from './locale.ts';
 
 type ImageKind = 'peach' | 'shorts' | 'custom';
 export type InputKind = 'mouse' | 'touch' | 'pen' | 'keyboard' | 'agent' | 'unknown';
 type Events = {
+  language_change: { from: Locale; to: Locale };
   toy_slap: { image: ImageKind; input: InputKind };
   toy_knead: { image: ImageKind; input: InputKind };
   image_change: { from: ImageKind; to: ImageKind };
@@ -30,6 +33,6 @@ export function pointerKind(value: string): InputKind {
 export function trackEvent<Name extends keyof Events>(name: Name, properties: Events[Name]) {
   // The Vercel entry initializes the SDK. Other builds and SSR remain silent.
   try {
-    if (typeof window !== 'undefined' && typeof window.va === 'function') track(name, properties);
+    if (typeof window !== 'undefined' && typeof window.va === 'function' && shouldSendAnalytics()) track(name, properties);
   } catch { /* Analytics must never interrupt an interaction. */ }
 }

@@ -7,12 +7,14 @@ import { createPeachRenderer } from '@/lib/peach-renderer';
 import { createSlapAudio } from '@/lib/slap-audio';
 import { beginGesture, moveGesture, finishGesture, type Gesture } from '@/lib/gesture';
 import { imageKind, pointerKind, trackEvent, type InputKind } from '@/lib/analytics';
+import { useI18n } from './i18n';
 
 export type ToyHandle = { reset(): void };
 type Burst = { id: number; x: number; y: number; text: string };
 type ModelContext = { registerTool(tool: { name: string; description: string; inputSchema: object; annotations: object; execute(input: unknown): unknown }, options: { signal: AbortSignal }): void | Promise<void> };
 
 export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean; image: ToyImage; onHit(): void }>(function PeachToy(props, ref) {
+  const { t } = useI18n();
   const canvas = useRef<HTMLCanvasElement>(null);
   const options = useRef(props); options.current = props;
   const hits = useRef<Impact[]>([]);
@@ -30,6 +32,13 @@ export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean
   const hitForce = useRef(1);
   const hand = useRef<HTMLImageElement>(null);
   const [handReady, setHandReady] = useState(false);
+  const [showHand, setShowHand] = useState(false);
+  useEffect(() => {
+    const finePointer = matchMedia('(any-pointer: fine)');
+    function updatePointer() { setShowHand(finePointer.matches); if (!finePointer.matches) setHandReady(false); }
+    updatePointer(); finePointer.addEventListener('change', updatePointer);
+    return () => finePointer.removeEventListener('change', updatePointer);
+  }, []);
   const [handVisible, setHandVisible] = useState(false);
 
   function clearHold() { if (holdTimer.current) clearTimeout(holdTimer.current); holdTimer.current = null; }
@@ -53,7 +62,7 @@ export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean
       { transform: 'translate(-43%, -43%) rotate(-34deg) scale(.88)', offset: .25 },
       { transform: 'translate(-43%, -48%) rotate(-18deg) scale(1)' },
     ], { duration: 230, easing: 'ease-out' });
-    setBursts(b => [...b.slice(-5), { id, x, y, text: ['啪！', '啵～', '啪叽', 'PAP!'][id % 4] }]);
+    setBursts(b => [...b.slice(-5), { id, x, y, text: [t.hit1, t.hit2, t.hit3, t.hit4][id % 4] }]);
     trackEvent('toy_slap', { image: imageKind(options.current.image), input });
     options.current.onHit(); wake.current();
     return true;
@@ -157,11 +166,11 @@ export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean
     wake.current();
   }
   const region = props.image.region;
-  return <button className={`toy-button ${props.image.custom ? 'custom-image' : ''} ${ready ? '' : 'fallback'} ${pressing ? 'pressing' : ''} ${handReady ? 'has-hand' : ''}`} aria-label="点击并松开拍打，长按或拖动揉捏；键盘按空格或回车也可拍打" onPointerEnter={e => { const p = point(e); positionHand(p.x, p.y, e.pointerType); }} onPointerLeave={() => setHandVisible(false)} onPointerDown={down} onPointerMove={move} onPointerUp={release} onPointerCancel={release} onLostPointerCapture={release} onClick={e => { if (e.detail === 0) slap(region.cx - region.rx * .4, region.cy); }}>
-    <img src={props.image.src} className={`toy-image ${ready ? 'hidden' : ''}`} alt={props.image.custom ? '你选择的自定义图片' : props.image.src === DEFAULT_IMAGE.src ? '一颗软乎乎的粉色蜜桃' : '穿粉色运动短裤的成年女性人台背面造型'} draggable={false} />
+  return <button className={`toy-button ${props.image.custom ? 'custom-image' : ''} ${ready ? '' : 'fallback'} ${pressing ? 'pressing' : ''} ${handReady ? 'has-hand' : ''}`} aria-label={t.toyLabel} onPointerEnter={e => { const p = point(e); positionHand(p.x, p.y, e.pointerType); }} onPointerLeave={() => setHandVisible(false)} onPointerDown={down} onPointerMove={move} onPointerUp={release} onPointerCancel={release} onLostPointerCapture={release} onClick={e => { if (e.detail === 0) slap(region.cx - region.rx * .4, region.cy); }}>
+    <img src={props.image.src} className={`toy-image ${ready ? 'hidden' : ''}`} alt={props.image.custom ? t.customAlt : props.image.src === DEFAULT_IMAGE.src ? t.peachAlt : t.modelAlt} draggable={false} />
     <canvas ref={canvas} aria-hidden="true" />
     {props.image.custom && <span className="custom-region-guide" aria-hidden="true" style={{ left: `${(region.cx - region.rx) * 100}%`, top: `${(region.cy - region.ry) * 100}%`, width: `${region.rx * 200}%`, height: `${region.ry * 200}%` }} />}
-    <img ref={hand} src="/hand.png" className={`hand-cursor ${handVisible && handReady ? 'visible' : ''}`} alt="" aria-hidden="true" draggable={false} onLoad={() => setHandReady(true)} />
+    {showHand && <img ref={hand} src="/hand.png" className={`hand-cursor ${handVisible && handReady ? 'visible' : ''}`} alt="" aria-hidden="true" draggable={false} onLoad={() => setHandReady(true)} />}
     {bursts.map(b => <span key={b.id} className="hit-effect" aria-hidden="true" style={{ left: `${b.x * 100}%`, top: `${b.y * 100}%` }} onAnimationEnd={e => { if (e.target === e.currentTarget) setBursts(old => old.filter(v => v.id !== b.id)); }}><span className="hit-ring" />{b.text}</span>)}
   </button>;
 });

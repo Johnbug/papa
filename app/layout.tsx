@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { zh } from '@/lib/locales/zh';
 export const metadata: Metadata = {
-  title: 'PAPA · 拍拍蜜桃',
+  title: zh.title,
   icons: { icon: '/favicon.svg' },
-  description: '点击拍一拍，按住揉一揉。一个软乎乎、有弹性的蜜桃解压小游戏。',
+  description: zh.description,
 };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return <html lang="zh-CN"><body>{children}</body></html>;

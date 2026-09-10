@@ -1,13 +1,21 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { Hand, Volume2, VolumeX, RotateCcw, ArrowUpRight, ArrowRight, Sparkles } from 'lucide-react';
+import { Hand, Volume2, VolumeX, RotateCcw, ArrowUpRight, ArrowRight, Sparkles, Languages } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { PeachToy, type ToyHandle } from './peach-toy';
 import { ImageCustomizer } from './image-customizer';
 import { DEFAULT_IMAGE, SHORTS_IMAGE, type ToyImage } from '@/lib/image-settings';
 import { imageKind, trackEvent } from '@/lib/analytics';
+import { LocaleProvider, useI18n } from './i18n';
+import { normalizeLocale } from '@/lib/locale';
+import { PrivacyNotice } from './privacy-notice';
 
 export default function Home() {
+  return <LocaleProvider><Game /></LocaleProvider>;
+}
+
+function Game() {
+  const { locale, t, setLocale } = useI18n();
   const toy = useRef<ToyHandle>(null);
   const [softness, setSoftness] = useState(68);
   const [sound, setSound] = useState(true);
@@ -46,35 +54,38 @@ export default function Home() {
   return (
     <main className="playground">
       <header className="topbar">
-        <a href="/" onClick={() => trackEvent('home_click', { image: imageKind(toyImage) })} className="brand" aria-label="PAPA 拍拍蜜桃首页">papa<span>®</span></a>
-        <div className="brand-caption">拍拍蜜桃<span>A LITTLE SOFT ESCAPE</span></div>
-        <div className="top-note"><span className="live-dot" /> 随时可以，放松一下</div>
-        <button className="icon-button top-sound" onClick={() => toggleSound('header')} aria-label={sound ? '关闭音效' : '开启音效'} aria-pressed={sound}>{sound ? <Volume2 size={20} /> : <VolumeX size={20} />}</button>
-      </header>
-      <section className="game" aria-label="拍拍蜜桃小游戏">
-        <div className="intro"><div className="eyebrow"><span /> NO PRESSURE. JUST PEACH.</div><h1>今天，也辛苦啦<span>拍拍就好。</span></h1><p>把一点小情绪，交给软乎乎。</p></div>
-        <div className="scoreboard"><span className="score-label">已经拍了</span><div className="score-number">{String(count).padStart(3, '0')}<span>下</span></div><div className="best">最高连击 <b>{best}</b></div></div>
-        <div className="toy-area">
-          <div className="soft-stamp" aria-hidden="true">100%<span>软 乎 乎</span><Sparkles size={16} /></div>
-          <PeachToy key={toyImage.src} ref={toy} softness={softness} sound={sound} onHit={recordHit} image={toyImage} />
-          <div className={`combo ${combo > 1 ? 'visible' : ''}`} aria-live="off"><span>COMBO</span><strong>×{combo}</strong><em>{combo >= 10 ? '停不下来了！' : combo >= 5 ? '烦恼弹走～' : '手感不错哦'}</em></div>
-          <div className="touch-note" aria-hidden="true"><ArrowUpRight size={34} strokeWidth={1.1} /><span>别客气，拍这里</span></div>
+        <a href="/" onClick={() => trackEvent('home_click', { image: imageKind(toyImage) })} className="brand" aria-label={t.home}>papa</a>
+        <div className="brand-caption">{t.brand}<span>{t.brandTagline}</span></div>
+        <div className="top-note"><span className="live-dot" /> {t.topNote}</div>
+        <div className="top-actions">
+          <label className="language-picker"><Languages size={16} aria-hidden="true" /><select aria-label={t.language} value={locale} onChange={e => { const next = normalizeLocale(e.target.value); if (next) setLocale(next); }}><option value="zh" lang="zh-CN">中文</option><option value="en" lang="en">English</option><option value="ja" lang="ja">日本語</option></select></label>
+          <button className="icon-button top-sound" onClick={() => toggleSound('header')} aria-label={sound ? t.mute : t.unmute} aria-pressed={sound}>{sound ? <Volume2 size={20} /> : <VolumeX size={20} />}</button>
         </div>
-        <div className="play-hint"><Hand size={17} strokeWidth={1.6} /><span>点击拍一拍 <i>·</i> 按住揉一揉 <i>·</i> 连点更解压</span></div>
-        <section className="experience-guide" aria-label="体验引导">
+      </header>
+      <section className="game" aria-label={t.game}>
+        <div className="intro"><div className="eyebrow"><span /> {t.eyebrow}</div><h1>{t.headline}<span>{t.headlineAccent}</span></h1><p>{t.intro}</p></div>
+        <div className="scoreboard"><span className="score-label">{t.score}</span><div className="score-number">{String(count).padStart(3, '0')}{t.scoreUnit && <span>{t.scoreUnit}</span>}</div><div className="best">{t.best} <b>{best}</b></div></div>
+        <div className="toy-area">
+          <div className="soft-stamp" aria-hidden="true">100%<span>{t.stamp}</span><Sparkles size={16} /></div>
+          <PeachToy key={toyImage.src} ref={toy} softness={softness} sound={sound} onHit={recordHit} image={toyImage} />
+          <div className={`combo ${combo > 1 ? 'visible' : ''}`} aria-live="off"><span>{t.combo}</span><strong>×{combo}</strong><em>{combo >= 10 ? t.comboGreat : combo >= 5 ? t.comboGood : t.comboStart}</em></div>
+          <div className="touch-note" aria-hidden="true"><ArrowUpRight size={34} strokeWidth={1.1} /><span>{t.touch}</span></div>
+        </div>
+        <div className="play-hint"><Hand size={17} strokeWidth={1.6} /><span>{t.hintTap} <i>·</i> {t.hintHold} <i>·</i> {t.hintCombo}</span></div>
+        <section className="experience-guide" aria-label={t.guide}>
           <ol className="experience-steps">
-            {['拍拍蜜桃', '试试臀部', '自己上传'].map((label, index) => <li key={label} className={index === stage ? 'active' : index < stage ? 'done' : ''} aria-current={index === stage ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}
+            {[t.stepPeach, t.stepModel, t.stepUpload].map((label, index) => <li key={label} className={index === stage ? 'active' : index < stage ? 'done' : ''} aria-current={index === stage ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}
           </ol>
-          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(SHORTS_IMAGE)}>试试臀部图片<ArrowRight size={15} /></button> : <ImageCustomizer key={toyImage.src} current={toyImage} onApply={changeImage} secondaryActions={<div className="experience-back"><button className="image-text-button" onClick={() => changeImage(DEFAULT_IMAGE)}>回到蜜桃</button>{stage === 2 && <button className="image-text-button" onClick={() => changeImage(SHORTS_IMAGE)}>回到臀部</button>}</div>} />}
+          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(SHORTS_IMAGE)}>{t.tryModel}<ArrowRight size={15} /></button> : <ImageCustomizer key={toyImage.src} current={toyImage} onApply={changeImage} secondaryActions={<div className="experience-back"><button className="image-text-button" onClick={() => changeImage(DEFAULT_IMAGE)}>{t.backPeach}</button>{stage === 2 && <button className="image-text-button" onClick={() => changeImage(SHORTS_IMAGE)}>{t.backModel}</button>}</div>} />}
         </section>
         <div className="controls">
-          <div className="soft-control"><div className="control-title"><span>软糯度</span><span className="soft-value">{softness < 35 ? '弹弹的' : softness < 75 ? '刚刚好' : '糯叽叽'}</span></div><div className="slider-row"><span>Q 弹</span><Slider aria-label="软糯度" min={0} max={100} value={[softness]} onValueChange={v => setSoftness(Array.isArray(v) ? v[0] : v)} onValueCommitted={v => trackEvent('softness_change', { value: Array.isArray(v) ? v[0] : v })} /><span>软糯</span></div></div>
+          <div className="soft-control"><div className="control-title"><span>{t.softness}</span><span className="soft-value">{softness < 35 ? t.firmValue : softness < 75 ? t.mediumValue : t.softValue}</span></div><div className="slider-row"><span>{t.firm}</span><Slider aria-label={t.softness} min={0} max={100} value={[softness]} onValueChange={v => setSoftness(Array.isArray(v) ? v[0] : v)} onValueCommitted={v => trackEvent('softness_change', { value: Array.isArray(v) ? v[0] : v })} /><span>{t.soft}</span></div></div>
           <span className="control-divider" />
-          <button className={`control-button ${sound ? 'enabled' : ''}`} onClick={() => toggleSound('controls')} aria-pressed={sound}>{sound ? <Volume2 size={21} /> : <VolumeX size={21} />}<span>音效{sound ? '开' : '关'}</span></button>
-          <button className="control-button" onClick={() => { trackEvent('game_reset', { image: imageKind(toyImage) }); reset(); }} aria-label="重新开始，清空拍打次数"><RotateCcw size={20} /><span>重新来</span></button>
+          <button className={`control-button ${sound ? 'enabled' : ''}`} onClick={() => toggleSound('controls')} aria-pressed={sound}>{sound ? <Volume2 size={21} /> : <VolumeX size={21} />}<span>{sound ? t.soundOn : t.soundOff}</span></button>
+          <button className="control-button" onClick={() => { trackEvent('game_reset', { image: imageKind(toyImage) }); reset(); }} aria-label={t.resetLabel}><RotateCcw size={20} /><span>{t.reset}</span></button>
         </div>
       </section>
-      <footer><span>MADE FOR YOUR SOFTER SIDE <span className="footer-star">✳</span></span></footer>
+      <footer><PrivacyNotice /><span>{t.footer} <span className="footer-star">✳</span></span></footer>
     </main>
   );
 }

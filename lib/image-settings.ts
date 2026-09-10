@@ -29,9 +29,10 @@ export function constrainPoint(x: number, y: number, region: Region) {
   const length = Math.hypot(dx, dy), scale = length > .94 ? .94 / length : 1;
   return { x: region.cx + dx * scale * region.rx, y: region.cy + dy * scale * region.ry };
 }
-export function validateUpload(file: { type: string; size: number }): string | null {
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return '请选择 JPG、PNG 或 WebP 图片。';
-  if (file.size === 0) return '这张图片是空文件，请重新选择。';
-  if (file.size > 20 * 1024 * 1024) return '图片超过 20 MB，请换一张小一点的图片。';
+export type UploadError = 'invalidType' | 'emptyFile' | 'oversizedFile';
+export function validateUpload(file: { type: string; size: number }): UploadError | null {
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return 'invalidType';
+  if (file.size === 0) return 'emptyFile';
+  if (file.size > 20 * 1024 * 1024) return 'oversizedFile';
   return null;
 }
