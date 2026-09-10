@@ -57,12 +57,7 @@ export default function Home() {
           <ol className="experience-steps">
             {['拍拍蜜桃', '试试臀部', '自己上传'].map((label, index) => <li key={label} className={index === stage ? 'active' : index < stage ? 'done' : ''} aria-current={index === stage ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}
           </ol>
-          <div className="experience-copy" aria-live="polite">
-            <h2>{stage === 0 ? count > 0 ? '手感不错？换个主角试试' : '先和这颗蜜桃打个招呼' : stage === 1 ? '换成你的图片，也能这样拍' : '现在，是你的专属软乎乎'}</h2>
-            <p>{stage === 0 ? '拍拍、揉揉，玩够了再换个新手感。' : stage === 1 ? '选一张喜欢的图片，圈出想拍的地方。' : '继续拍一拍，或调整图片和拍打范围。'}</p>
-          </div>
-          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(SHORTS_IMAGE)}>试试臀部图片<ArrowRight size={17} /></button> : <ImageCustomizer key={toyImage.src} current={toyImage} onApply={changeImage} />}
-          {stage > 0 && <div className="experience-back"><button className="image-text-button" onClick={() => changeImage(DEFAULT_IMAGE)}>回到蜜桃</button>{stage === 2 && <button className="image-text-button" onClick={() => changeImage(SHORTS_IMAGE)}>换回臀部图片</button>}</div>}
+          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(SHORTS_IMAGE)}>试试臀部图片<ArrowRight size={15} /></button> : <ImageCustomizer key={toyImage.src} current={toyImage} onApply={changeImage} secondaryActions={<div className="experience-back"><button className="image-text-button" onClick={() => changeImage(DEFAULT_IMAGE)}>回到蜜桃</button>{stage === 2 && <button className="image-text-button" onClick={() => changeImage(SHORTS_IMAGE)}>回到臀部</button>}</div>} />}
         </section>
         <div className="controls">
           <div className="soft-control"><div className="control-title"><span>软糯度</span><span className="soft-value">{softness < 35 ? '弹弹的' : softness < 75 ? '刚刚好' : '糯叽叽'}</span></div><div className="slider-row"><span>Q 弹</span><Slider aria-label="软糯度" min={0} max={100} value={[softness]} onValueChange={v => setSoftness(Array.isArray(v) ? v[0] : v)} /><span>软糯</span></div></div>
