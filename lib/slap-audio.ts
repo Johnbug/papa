@@ -1,21 +1,62 @@
+import { renderSlap } from './slap-synth';
+
+type Voice = { source: AudioBufferSourceNode; gain: GainNode; panner: StereoPannerNode };
+
 export function createSlapAudio() {
   let context: AudioContext | null = null;
+  let mix: DynamicsCompressorNode | null = null;
+  let limiter: WaveShaperNode | null = null;
+  let output: GainNode | null = null;
+  const voices = new Set<Voice>();
+
+  function initialize() {
+    const ctx = new AudioContext();
+    const compressor = ctx.createDynamicsCompressor();
+    compressor.threshold.value = -12; compressor.knee.value = 16; compressor.ratio.value = 3;
+    compressor.attack.value = .002; compressor.release.value = .09;
+    const shaper = ctx.createWaveShaper();
+    const curve = new Float32Array(4097);
+    for (let i = 0; i < curve.length; i++) curve[i] = Math.tanh((i / (curve.length - 1) * 2 - 1) * 1.3);
+    shaper.curve = curve; shaper.oversample = '2x';
+    const gain = ctx.createGain(); gain.gain.value = .82;
+    compressor.connect(shaper); shaper.connect(gain); gain.connect(ctx.destination);
+    context = ctx; mix = compressor; limiter = shaper; output = gain;
+    return ctx;
+  }
+
   return {
     play(force: number, softness: number, pan: number) {
       try {
-        context ??= new AudioContext();
-        if (context.state === 'suspended') void context.resume().catch(() => {});
-        const ctx = context, t = ctx.currentTime;
-        const gain = ctx.createGain(); gain.gain.setValueAtTime(Math.min(.55, force * .32), t); gain.gain.exponentialRampToValueAtTime(.001, t + .17);
-        const panner = ctx.createStereoPanner(); panner.pan.value = Math.max(-.7, Math.min(.7, pan)); gain.connect(panner); panner.connect(ctx.destination);
-        const tone = ctx.createOscillator(); tone.type = 'sine'; tone.frequency.setValueAtTime(180 - softness * 65, t); tone.frequency.exponentialRampToValueAtTime(48, t + .13); tone.connect(gain); tone.start(t); tone.stop(t + .19);
-        const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * .065), ctx.sampleRate);
-        const samples = buffer.getChannelData(0); for (let i = 0; i < samples.length; i++) samples[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * .012));
-        const noise = ctx.createBufferSource(); noise.buffer = buffer;
-        const filter = ctx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 1100 + force * 600; filter.Q.value = .7; noise.connect(filter); filter.connect(gain); noise.start(t);
-        tone.onended = () => { tone.disconnect(); noise.disconnect(); filter.disconnect(); gain.disconnect(); panner.disconnect(); };
-      } catch { /* Audio is optional; the toy remains playable. */ }
+        const ctx = context ?? initialize();
+        if (ctx.state === 'suspended') void ctx.resume().catch(() => {});
+        const t = ctx.currentTime;
+        if (voices.size >= 8) {
+          const oldest = voices.values().next().value!;
+          oldest.gain.gain.setValueAtTime(1, t);
+          oldest.gain.gain.linearRampToValueAtTime(0, t + .006);
+          oldest.source.stop(t + .007); voices.delete(oldest);
+        }
+        const samples = renderSlap(ctx.sampleRate, force, softness, Math.floor(Math.random() * 0xffffffff));
+        const buffer = ctx.createBuffer(1, samples.length, ctx.sampleRate);
+        buffer.getChannelData(0).set(samples);
+        const source = ctx.createBufferSource(); source.buffer = buffer;
+        const gain = ctx.createGain();
+        const panner = ctx.createStereoPanner(); panner.pan.value = Math.max(-.65, Math.min(.65, Number.isFinite(pan) ? pan : 0));
+        source.connect(gain); gain.connect(panner); panner.connect(mix!);
+        const voice = { source, gain, panner }; voices.add(voice);
+        source.onended = () => { voices.delete(voice); source.disconnect(); gain.disconnect(); panner.disconnect(); };
+        source.start(t);
+      } catch { /* Audio remains optional if the browser cannot play it. */ }
     },
-    dispose() { if (context) void context.close().catch(() => {}); context = null; },
+    dispose() {
+      for (const voice of voices) {
+        voice.source.onended = null;
+        try { voice.source.stop(); } catch { /* It may already have ended. */ }
+        voice.source.disconnect(); voice.gain.disconnect(); voice.panner.disconnect();
+      }
+      voices.clear(); mix?.disconnect(); limiter?.disconnect(); output?.disconnect();
+      if (context) void context.close().catch(() => {});
+      context = null; mix = null; limiter = null; output = null;
+    },
   };
 }
