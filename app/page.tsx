@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Hand, Volume2, VolumeX, RotateCcw, ArrowUpRight, Sparkles } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { PeachToy, type ToyHandle } from './peach-toy';
+import { ImageCustomizer } from './image-customizer';
+import { DEFAULT_IMAGE, type ToyImage } from '@/lib/image-settings';
 
 export default function Home() {
   const toy = useRef<ToyHandle>(null);
@@ -11,6 +13,7 @@ export default function Home() {
   const [count, setCount] = useState(0);
   const [combo, setCombo] = useState(0);
   const [best, setBest] = useState(0);
+  const [toyImage, setToyImage] = useState<ToyImage>(DEFAULT_IMAGE);
   const last = useRef(0);
   const chain = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -28,6 +31,9 @@ export default function Home() {
     toy.current?.reset();
   }
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+  useEffect(() => () => { if (toyImage.src.startsWith('blob:')) URL.revokeObjectURL(toyImage.src); }, [toyImage.src]);
+  useEffect(() => () => { if (toyImage.original?.src.startsWith('blob:')) URL.revokeObjectURL(toyImage.original.src); }, [toyImage.original?.src]);
+  function changeImage(image: ToyImage) { reset(); setToyImage(image); }
   return (
     <main className="playground">
       <header className="topbar">
@@ -41,11 +47,12 @@ export default function Home() {
         <div className="scoreboard"><span className="score-label">已经拍了</span><div className="score-number">{String(count).padStart(3, '0')}<span>下</span></div><div className="best">最高连击 <b>{best}</b></div></div>
         <div className="toy-area">
           <div className="soft-stamp" aria-hidden="true">100%<span>软 乎 乎</span><Sparkles size={16} /></div>
-          <PeachToy ref={toy} softness={softness} sound={sound} onHit={recordHit} />
+          <PeachToy key={toyImage.src} ref={toy} softness={softness} sound={sound} onHit={recordHit} image={toyImage} />
           <div className={`combo ${combo > 1 ? 'visible' : ''}`} aria-live="off"><span>COMBO</span><strong>×{combo}</strong><em>{combo >= 10 ? '停不下来了！' : combo >= 5 ? '烦恼弹走～' : '手感不错哦'}</em></div>
           <div className="touch-note" aria-hidden="true"><ArrowUpRight size={34} strokeWidth={1.1} /><span>别客气，拍这里</span></div>
         </div>
         <div className="play-hint"><Hand size={17} strokeWidth={1.6} /><span>点击拍一拍 <i>·</i> 按住揉一揉 <i>·</i> 连点更解压</span></div>
+        <ImageCustomizer current={toyImage} onApply={changeImage} onRestore={() => changeImage(DEFAULT_IMAGE)} />
         <div className="controls">
           <div className="soft-control"><div className="control-title"><span>软糯度</span><span className="soft-value">{softness < 35 ? '弹弹的' : softness < 75 ? '刚刚好' : '糯叽叽'}</span></div><div className="slider-row"><span>Q 弹</span><Slider aria-label="软糯度" min={0} max={100} value={[softness]} onValueChange={v => setSoftness(Array.isArray(v) ? v[0] : v)} /><span>软糯</span></div></div>
           <span className="control-divider" />
@@ -53,7 +60,7 @@ export default function Home() {
           <button className="control-button" onClick={reset} aria-label="重新开始，清空拍打次数"><RotateCcw size={20} /><span>重新来</span></button>
         </div>
       </section>
-      <footer><span>无 KPI · 无输赢 · 只有好手感</span><span>MADE FOR YOUR SOFTER SIDE <span className="footer-star">✳</span></span></footer>
+      <footer><span>MADE FOR YOUR SOFTER SIDE <span className="footer-star">✳</span></span></footer>
     </main>
   );
 }

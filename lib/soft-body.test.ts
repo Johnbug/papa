@@ -7,6 +7,8 @@ test('background clicks miss while both peach lobes accept hits', () => {
   assert.equal(isPeach(.7, .55), true);
   assert.equal(isPeach(.02, .02), false);
   assert.equal(isPeach(.5, .98), false);
+  assert.equal(isPeach(.5, .2), false);
+  assert.equal(isPeach(.4, .8), false);
 });
 const hit: Impact = { x: .3, y: .55, time: 0, force: 1 };
 test('a hit deforms its own lobe more than the opposite side', () => {
@@ -25,4 +27,12 @@ test('rapid hits stay finite and deformation remains bounded', () => {
     const d = deform(.35, .6, t, hits, 1);
     assert.ok(d.every(v => Number.isFinite(v) && Math.abs(v) <= .11));
   }
+});
+
+test('custom image deformation leaves all pixels outside its selected ellipse fixed', () => {
+  const region = { cx: .75, cy: .3, rx: .15, ry: .2 };
+  const impacts = [{ x: .72, y: .3, time: 0, force: 1 }];
+  assert.deepEqual(deform(.5, .3, .08, impacts, .7, region), [0, 0]);
+  assert.deepEqual(deform(.75, .7, .08, impacts, .7, region), [0, 0]);
+  assert.ok(Math.hypot(...deform(.72, .3, .08, impacts, .7, region)) > .005);
 });
