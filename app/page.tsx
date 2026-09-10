@@ -4,7 +4,7 @@ import { Hand, Volume2, VolumeX, RotateCcw, ArrowUpRight, ArrowRight, Sparkles, 
 import { Slider } from '@/components/ui/slider';
 import { PeachToy, type ToyHandle } from './peach-toy';
 import { ImageCustomizer } from './image-customizer';
-import { DEFAULT_IMAGE, MODEL_IMAGE, defaultSoftness, type ToyImage } from '@/lib/image-settings';
+import { DEFAULT_IMAGE, PINK_IMAGE, MODEL_IMAGE, defaultSoftness, type ToyImage } from '@/lib/image-settings';
 import { imageKind, trackEvent } from '@/lib/analytics';
 import { LocaleProvider, useI18n } from './i18n';
 import { normalizeLocale } from '@/lib/locale';
@@ -77,14 +77,19 @@ function Game() {
           <ol className="experience-steps">
             {[t.stepPeach, t.stepModel, t.stepUpload].map((label, index) => <li key={label} className={index === stage ? 'active' : index < stage ? 'done' : ''} aria-current={index === stage ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}
           </ol>
-          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(MODEL_IMAGE)}>{t.tryModel}<ArrowRight size={15} /></button> : <ImageCustomizer key={toyImage.src} current={toyImage} onApply={changeImage} secondaryActions={<div className="experience-back"><button className="image-text-button" onClick={() => changeImage(DEFAULT_IMAGE)}>{t.backPeach}</button>{stage === 2 && <button className="image-text-button" onClick={() => changeImage(MODEL_IMAGE)}>{t.backModel}</button>}</div>} />}
+          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(PINK_IMAGE)}>{t.tryModel}<ArrowRight size={15} /></button> : <>
+            <div className="model-options" role="group" aria-label={t.chooseModel}>
+              {[{ image: PINK_IMAGE, label: t.pinkModel, color: 'pink' }, { image: MODEL_IMAGE, label: t.denimModel, color: 'denim' }].map(({ image, label, color }) => <button key={image.src} className="model-option" aria-pressed={toyImage.src === image.src} onClick={() => { if (toyImage.src !== image.src) changeImage(image); }}><span className={`model-swatch ${color}`} aria-hidden="true" />{label}</button>)}
+            </div>
+            <ImageCustomizer key={toyImage.src} current={toyImage} onApply={changeImage} secondaryActions={<div className="experience-back"><button className="image-text-button" onClick={() => changeImage(DEFAULT_IMAGE)}>{t.backPeach}</button></div>} />
+          </>}
         </section>
         <div className="controls">
           <div className="soft-control"><div className="control-title"><span>{t.softness}</span><span className="soft-value">{softness < 35 ? t.firmValue : softness < 75 ? t.mediumValue : t.softValue}</span></div><div className="slider-row"><span>{t.firm}</span><Slider aria-label={t.softness} aria-describedby="softness-hint" min={0} max={100} value={[softness]} onValueChange={v => setSoftness(Array.isArray(v) ? v[0] : v)} onValueCommitted={v => trackEvent('softness_change', { value: Array.isArray(v) ? v[0] : v })} /><span>{t.soft}</span></div></div>
           <span className="control-divider" />
           <button className={`control-button ${sound ? 'enabled' : ''}`} onClick={() => toggleSound('controls')} aria-pressed={sound}>{sound ? <Volume2 size={21} /> : <VolumeX size={21} />}<span>{sound ? t.soundOn : t.soundOff}</span></button>
           <button className="control-button" onClick={() => { trackEvent('game_reset', { image: imageKind(toyImage) }); reset(); }} aria-label={t.resetLabel}><RotateCcw size={20} /><span>{t.reset}</span></button>
-          <p id="softness-hint" className="softness-hint" aria-live="polite">{stage === 1 ? t.denimSoftnessHint : t.softnessHint}</p>
+          <p id="softness-hint" className="softness-hint" aria-live="polite">{stage === 1 ? toyImage.src === MODEL_IMAGE.src ? t.denimSoftnessHint : t.pinkSoftnessHint : t.softnessHint}</p>
         </div>
       </section>
       <footer><PrivacyNotice /><span>{t.footer} <span className="footer-star">✳</span></span></footer>

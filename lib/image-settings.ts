@@ -3,6 +3,7 @@ export const DEFAULT_REGION: Region = { cx: .5, cy: .56, rx: .435, ry: .32 };
 export type ImageFraming = { zoom: number; panX: number; panY: number };
 export type ToyImage = { src: string; region: Region; custom: boolean; original?: ImageFraming & { src: string } };
 export const DEFAULT_IMAGE: ToyImage = { src: '/peach.png', region: DEFAULT_REGION, custom: false };
+export const PINK_IMAGE: ToyImage = { src: '/shorts.png', region: { cx: .5, cy: .44, rx: .35, ry: .23 }, custom: false };
 export const MODEL_IMAGE: ToyImage = { src: '/denim.png', region: { cx: .5, cy: .44, rx: .35, ry: .23 }, custom: false };
 export function defaultSoftness(image: Pick<ToyImage, 'src' | 'custom'>) {
   return !image.custom && image.src === MODEL_IMAGE.src ? 28 : 68;

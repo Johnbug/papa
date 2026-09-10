@@ -8,6 +8,7 @@ export const zh = {
   comboGreat: '停不下来了！', comboGood: '烦恼弹走～', comboStart: '手感不错哦', touch: '试着拍这里',
   hintTap: '点击拍拍', hintHold: '按住揉揉', hintCombo: '连点更解压', guide: '体验引导',
   stepPeach: '拍拍蜜桃', stepModel: '试试臀部', stepUpload: '自己上传', tryModel: '试试臀部图片', backPeach: '回到蜜桃', backModel: '回到臀部',
+  chooseModel: '选择造型和初始手感', pinkModel: '粉色 · 软糯', denimModel: '牛仔 · Q 弹', pinkSoftnessHint: '粉色默认软糯，向左拖动更 Q 弹。', pinkModelAlt: '穿粉色运动短裤的虚构成年女性造型背面',
   softnessHint: '拖动试试：左边 Q 弹，右边软糯。', denimSoftnessHint: '牛仔默认更 Q 弹，向右拖动更软。',
   softness: '软糯度', firm: 'Q 弹', soft: '软糯', firmValue: '弹弹的', mediumValue: '刚刚好', softValue: '糯叽叽',
   soundOn: '音效开', soundOff: '音效关', mute: '关闭音效', unmute: '开启音效', reset: '重新来', resetLabel: '重新开始，清空拍打次数',

@@ -1,9 +1,9 @@
 import { track } from '@vercel/analytics';
-import { DEFAULT_IMAGE, type ToyImage } from './image-settings.ts';
+import { DEFAULT_IMAGE, MODEL_IMAGE, type ToyImage } from './image-settings.ts';
 import { shouldSendAnalytics } from './analytics-preferences.ts';
 import type { Locale } from './locale.ts';
 
-type ImageKind = 'peach' | 'shorts' | 'custom';
+type ImageKind = 'peach' | 'shorts' | 'denim' | 'custom';
 export type InputKind = 'mouse' | 'touch' | 'pen' | 'keyboard' | 'agent' | 'unknown';
 type Events = {
   language_change: { from: Locale; to: Locale };
@@ -25,7 +25,7 @@ type Events = {
 
 // Only fixed categories are derived from images; URLs and file data never leave the editor.
 export function imageKind(image: Pick<ToyImage, 'src' | 'custom'>): ImageKind {
-  return image.custom ? 'custom' : image.src === DEFAULT_IMAGE.src ? 'peach' : 'shorts';
+  return image.custom ? 'custom' : image.src === DEFAULT_IMAGE.src ? 'peach' : image.src === MODEL_IMAGE.src ? 'denim' : 'shorts';
 }
 export function pointerKind(value: string): InputKind {
   return value === 'mouse' || value === 'touch' || value === 'pen' ? value : 'unknown';

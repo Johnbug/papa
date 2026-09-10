@@ -10,6 +10,7 @@ export const ja: Messages = {
   comboGreat: 'もう止まらない！', comboGood: 'モヤモヤ、飛んでいけ〜', comboStart: 'いい感じ！', touch: 'ここをタップしてみて',
   hintTap: 'タップでぽんぽん', hintHold: '長押しでむにゅっ', hintCombo: '連打でスッキリ', guide: '遊び方を選ぶ',
   stepPeach: '桃', stepModel: 'モデル', stepUpload: '自分の画像', tryModel: 'モデルを試す', backPeach: '桃に戻る', backModel: 'モデルに戻る',
+  chooseModel: '見た目と最初のやわらかさを選ぶ', pinkModel: 'ピンク · もちもち', denimModel: 'デニム · ぷるぷる', pinkSoftnessHint: 'ピンクはやわらかめ。左へ動かすと弾む感じに。', pinkModelAlt: '透けないピンクのスポーツショーツを着た架空の成人女性の後ろ姿',
   softnessHint: '左へ動かすと弾む感じ、右へ動かすとやわらかく。', denimSoftnessHint: 'デニムは弾む感じ。右へ動かすとやわらかく。',
   softness: 'やわらかさ', firm: 'ぷるぷる', soft: 'もちもち', firmValue: '弾む感じ', mediumValue: 'ちょうどいい', softValue: 'もっちもち',
   soundOn: '音オン', soundOff: '音オフ', mute: '効果音をオフにする', unmute: '効果音をオンにする', reset: 'やり直す', resetLabel: '最初からやり直し、タップ数をリセットする',

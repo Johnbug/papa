@@ -39,10 +39,11 @@ test('custom image deformation leaves all pixels outside its selected ellipse fi
 });
 
 await test('denim preset resists kneading more and settles sooner than the soft preset', async () => {
-  const { defaultSoftness, DEFAULT_IMAGE, MODEL_IMAGE } = await import('./image-settings.ts');
+  const { defaultSoftness, DEFAULT_IMAGE, PINK_IMAGE, MODEL_IMAGE } = await import('./image-settings.ts');
   const { deformPress } = await import('./soft-body.ts');
   const firm = defaultSoftness(MODEL_IMAGE) / 100;
-  const soft = defaultSoftness(DEFAULT_IMAGE) / 100;
+  const soft = defaultSoftness(PINK_IMAGE) / 100;
+  assert.equal(defaultSoftness(PINK_IMAGE), defaultSoftness(DEFAULT_IMAGE));
   const region = MODEL_IMAGE.region;
   const press = { x: .32, y: .44, amount: 1 };
   assert.ok(Math.hypot(...deformPress(.32, .44, press, firm, region)) < Math.hypot(...deformPress(.32, .44, press, soft, region)) * .9);

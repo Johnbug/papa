@@ -2,7 +2,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type PointerEvent } from 'react';
 import { flushSync } from 'react-dom';
 import { type Impact } from '@/lib/soft-body';
-import { DEFAULT_IMAGE, containsPoint, constrainPoint, type ToyImage } from '@/lib/image-settings';
+import { DEFAULT_IMAGE, PINK_IMAGE, containsPoint, constrainPoint, type ToyImage } from '@/lib/image-settings';
 import { createPeachRenderer } from '@/lib/peach-renderer';
 import { createSlapAudio } from '@/lib/slap-audio';
 import { beginGesture, moveGesture, finishGesture, type Gesture } from '@/lib/gesture';
@@ -167,7 +167,7 @@ export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean
   }
   const region = props.image.region;
   return <button className={`toy-button ${props.image.custom ? 'custom-image' : ''} ${ready ? '' : 'fallback'} ${pressing ? 'pressing' : ''} ${handReady ? 'has-hand' : ''}`} aria-label={t.toyLabel} onPointerEnter={e => { const p = point(e); positionHand(p.x, p.y, e.pointerType); }} onPointerLeave={() => setHandVisible(false)} onPointerDown={down} onPointerMove={move} onPointerUp={release} onPointerCancel={release} onLostPointerCapture={release} onClick={e => { if (e.detail === 0) slap(region.cx - region.rx * .4, region.cy); }}>
-    <img src={props.image.src} className={`toy-image ${ready ? 'hidden' : ''}`} alt={props.image.custom ? t.customAlt : props.image.src === DEFAULT_IMAGE.src ? t.peachAlt : t.modelAlt} draggable={false} />
+    <img src={props.image.src} className={`toy-image ${ready ? 'hidden' : ''}`} alt={props.image.custom ? t.customAlt : props.image.src === DEFAULT_IMAGE.src ? t.peachAlt : props.image.src === PINK_IMAGE.src ? t.pinkModelAlt : t.modelAlt} draggable={false} />
     <canvas ref={canvas} aria-hidden="true" />
     {props.image.custom && <span className="custom-region-guide" aria-hidden="true" style={{ left: `${(region.cx - region.rx) * 100}%`, top: `${(region.cy - region.ry) * 100}%`, width: `${region.rx * 200}%`, height: `${region.ry * 200}%` }} />}
     {showHand && <img ref={hand} src="/hand.png" className={`hand-cursor ${handVisible && handReady ? 'visible' : ''}`} alt="" aria-hidden="true" draggable={false} onLoad={() => setHandReady(true)} />}

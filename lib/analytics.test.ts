@@ -68,3 +68,11 @@ await test('a rejected storage write still applies opt-out for the current page'
     assert.equal(shouldSendAnalytics(), false);
   } finally { Reflect.deleteProperty(globalThis, 'window'); }
 });
+
+await test('pink and denim models have distinct categories for switches and presets', async () => {
+  const { PINK_IMAGE, MODEL_IMAGE, defaultSoftness } = await import('./image-settings.ts');
+  assert.equal(imageKind(PINK_IMAGE), 'shorts');
+  assert.equal(imageKind(MODEL_IMAGE), 'denim');
+  assert.notEqual(imageKind(PINK_IMAGE), imageKind(MODEL_IMAGE));
+  assert.ok(defaultSoftness(PINK_IMAGE) > defaultSoftness(MODEL_IMAGE));
+});
