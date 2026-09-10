@@ -10,6 +10,7 @@ export const en: Messages = {
   comboGreat: 'Can’t stop squishing!', comboGood: 'Bounce your worries away!', comboStart: 'Feels good, right?', touch: 'Try tapping here',
   hintTap: 'Tap to pat', hintHold: 'Hold to squish', hintCombo: 'Keep tapping to unwind', guide: 'Ways to play',
   stepPeach: 'Peach', stepModel: 'Model', stepUpload: 'Your image', tryModel: 'Try the model', backPeach: 'Back to peach', backModel: 'Back to model',
+  softnessHint: 'Slide left for bounce, right for softness.', denimSoftnessHint: 'Denim starts bouncy. Slide right to soften.',
   softness: 'Softness', firm: 'Bouncy', soft: 'Squishy', firmValue: 'Springy', mediumValue: 'Just right', softValue: 'Extra squishy',
   soundOn: 'Sound on', soundOff: 'Sound off', mute: 'Turn sound off', unmute: 'Turn sound on', reset: 'Start over', resetLabel: 'Start over and clear the tap count',
   footer: 'A little softness for your day', privacy: 'Privacy & use', closePrivacy: 'Close privacy and use details',

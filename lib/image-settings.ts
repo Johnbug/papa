@@ -4,6 +4,9 @@ export type ImageFraming = { zoom: number; panX: number; panY: number };
 export type ToyImage = { src: string; region: Region; custom: boolean; original?: ImageFraming & { src: string } };
 export const DEFAULT_IMAGE: ToyImage = { src: '/peach.png', region: DEFAULT_REGION, custom: false };
 export const MODEL_IMAGE: ToyImage = { src: '/denim.png', region: { cx: .5, cy: .44, rx: .35, ry: .23 }, custom: false };
+export function defaultSoftness(image: Pick<ToyImage, 'src' | 'custom'>) {
+  return !image.custom && image.src === MODEL_IMAGE.src ? 28 : 68;
+}
 export const clamp = (v: number, min = 0, max = 1) => Math.max(min, Math.min(max, v));
 export function cropPlacement(width: number, height: number, zoom: number, panX: number, panY: number) {
   if (!(width > 0 && height > 0)) throw new Error('图片尺寸无效');

@@ -107,7 +107,7 @@ button:disabled { cursor: wait; opacity: .55; }
 .combo em { font-style: normal; font-size: 12px; margin-top: 5px; }
 .play-hint { display: flex; align-items: center; gap: 9px; color: #a58076; font-size: 12px; margin: 0 0 27px; z-index: 1; }
 .play-hint i { font-style: normal; margin: 0 9px; color: #c0a397; }
-.controls { display: flex; align-items: center; width: 484px; max-width: 100%; padding: 20px 24px; border-radius: 22px; background: #fffcf9c7; border: 1px solid #fff; box-shadow: 0 8px 32px #b76c5710, 0 1px 3px #b76c5708; z-index: 3; gap: 20px; margin-bottom: 34px; }
+.controls { display: grid; grid-template-columns: minmax(0, 1fr) 1px auto auto; align-items: center; width: 484px; max-width: 100%; padding: 20px 24px; border-radius: 22px; background: #fffcf9c7; border: 1px solid #fff; box-shadow: 0 8px 32px #b76c5710, 0 1px 3px #b76c5708; z-index: 3; gap: 20px; margin-bottom: 34px; }
 .soft-control { flex: 1; min-width: 0; }
 .control-title { font-size: 13px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
 .soft-value { font-size: 11px; color: #cc6c76; background: #fae9e5; border-radius: 4px; padding: 3px 7px; }
@@ -166,3 +166,6 @@ html:lang(en) .intro, html:lang(ja) .intro { max-width: 270px; }
   .image-setting { grid-template-columns: minmax(90px, 35%) minmax(0, 1fr); }
 }
 @media(max-width:480px) { .brand-caption { display: none; } .language-picker select { font-size: 12px; } }
+
+.controls { row-gap: 8px; }
+.softness-hint { grid-column: 1 / -1; margin: 0; color: #a16e64; font-size: 11px; line-height: 1.5; text-align: center; }

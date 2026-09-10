@@ -1,5 +1,11 @@
 import { DEFAULT_REGION, containsPoint, regionWeight, type Region } from './image-settings.ts';
 export type Impact = { x: number; y: number; time: number; force: number };
+export function deformPress(x: number, y: number, press: { x: number; y: number; amount: number }, softness: number, region: Region): [number, number] {
+  const rx = x - press.x, ry = y - press.y;
+  const compliance = .65 + Math.max(0, Math.min(1, softness)) * .5;
+  const local = Math.exp(-((rx / region.rx) ** 2 + (ry / region.ry) ** 2) / .3) * press.amount * regionWeight(x, y, region) * compliance;
+  return [-rx * local * .52, (-ry * .4 + .12 * region.ry) * local];
+}
 export function isPeach(x: number, y: number): boolean {
   return containsPoint(x, y, DEFAULT_REGION);
 }

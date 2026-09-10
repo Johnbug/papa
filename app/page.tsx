@@ -4,7 +4,7 @@ import { Hand, Volume2, VolumeX, RotateCcw, ArrowUpRight, ArrowRight, Sparkles, 
 import { Slider } from '@/components/ui/slider';
 import { PeachToy, type ToyHandle } from './peach-toy';
 import { ImageCustomizer } from './image-customizer';
-import { DEFAULT_IMAGE, MODEL_IMAGE, type ToyImage } from '@/lib/image-settings';
+import { DEFAULT_IMAGE, MODEL_IMAGE, defaultSoftness, type ToyImage } from '@/lib/image-settings';
 import { imageKind, trackEvent } from '@/lib/analytics';
 import { LocaleProvider, useI18n } from './i18n';
 import { normalizeLocale } from '@/lib/locale';
@@ -17,7 +17,7 @@ export default function Home() {
 function Game() {
   const { locale, t, setLocale } = useI18n();
   const toy = useRef<ToyHandle>(null);
-  const [softness, setSoftness] = useState(68);
+  const [softness, setSoftness] = useState(defaultSoftness(DEFAULT_IMAGE));
   const [sound, setSound] = useState(true);
   const [count, setCount] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -45,6 +45,7 @@ function Game() {
   useEffect(() => () => { if (toyImage.original?.src.startsWith('blob:')) URL.revokeObjectURL(toyImage.original.src); }, [toyImage.original?.src]);
   function changeImage(image: ToyImage) {
     trackEvent('image_change', { from: imageKind(toyImage), to: imageKind(image) });
+    if (imageKind(image) !== imageKind(toyImage)) setSoftness(defaultSoftness(image));
     reset(); setToyImage(image);
   }
   function toggleSound(location: 'header' | 'controls') {
@@ -79,10 +80,11 @@ function Game() {
           {stage === 0 ? <button className="guide-next" onClick={() => changeImage(MODEL_IMAGE)}>{t.tryModel}<ArrowRight size={15} /></button> : <ImageCustomizer key={toyImage.src} current={toyImage} onApply={changeImage} secondaryActions={<div className="experience-back"><button className="image-text-button" onClick={() => changeImage(DEFAULT_IMAGE)}>{t.backPeach}</button>{stage === 2 && <button className="image-text-button" onClick={() => changeImage(MODEL_IMAGE)}>{t.backModel}</button>}</div>} />}
         </section>
         <div className="controls">
-          <div className="soft-control"><div className="control-title"><span>{t.softness}</span><span className="soft-value">{softness < 35 ? t.firmValue : softness < 75 ? t.mediumValue : t.softValue}</span></div><div className="slider-row"><span>{t.firm}</span><Slider aria-label={t.softness} min={0} max={100} value={[softness]} onValueChange={v => setSoftness(Array.isArray(v) ? v[0] : v)} onValueCommitted={v => trackEvent('softness_change', { value: Array.isArray(v) ? v[0] : v })} /><span>{t.soft}</span></div></div>
+          <div className="soft-control"><div className="control-title"><span>{t.softness}</span><span className="soft-value">{softness < 35 ? t.firmValue : softness < 75 ? t.mediumValue : t.softValue}</span></div><div className="slider-row"><span>{t.firm}</span><Slider aria-label={t.softness} aria-describedby="softness-hint" min={0} max={100} value={[softness]} onValueChange={v => setSoftness(Array.isArray(v) ? v[0] : v)} onValueCommitted={v => trackEvent('softness_change', { value: Array.isArray(v) ? v[0] : v })} /><span>{t.soft}</span></div></div>
           <span className="control-divider" />
           <button className={`control-button ${sound ? 'enabled' : ''}`} onClick={() => toggleSound('controls')} aria-pressed={sound}>{sound ? <Volume2 size={21} /> : <VolumeX size={21} />}<span>{sound ? t.soundOn : t.soundOff}</span></button>
           <button className="control-button" onClick={() => { trackEvent('game_reset', { image: imageKind(toyImage) }); reset(); }} aria-label={t.resetLabel}><RotateCcw size={20} /><span>{t.reset}</span></button>
+          <p id="softness-hint" className="softness-hint" aria-live="polite">{stage === 1 ? t.denimSoftnessHint : t.softnessHint}</p>
         </div>
       </section>
       <footer><PrivacyNotice /><span>{t.footer} <span className="footer-star">✳</span></span></footer>

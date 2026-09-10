@@ -1,5 +1,5 @@
-import { deform, type Impact } from './soft-body';
-import { regionWeight, type Region } from './image-settings';
+import { deform, deformPress, type Impact } from './soft-body';
+import { type Region } from './image-settings';
 
 export function createPeachRenderer(canvas: HTMLCanvasElement, image: HTMLImageElement) {
   const gl = canvas.getContext('webgl', { alpha: true, antialias: true, premultipliedAlpha: false });
@@ -40,12 +40,7 @@ export function createPeachRenderer(canvas: HTMLCanvasElement, image: HTMLImageE
       for (let i = 0; i < uv.length; i += 2) {
         const x = uv[i], y = uv[i + 1];
         const [dx, dy] = reduced ? [0, 0] : deform(x, y, now, impacts, softness, region);
-        let px = 0, py = 0;
-        if (press && !reduced) {
-          const rx = x - press.x, ry = y - press.y;
-          const local = Math.exp(-((rx / region.rx) ** 2 + (ry / region.ry) ** 2) / .3) * press.amount * regionWeight(x, y, region);
-          px = -rx * local * .52; py = (-ry * .4 + .12 * region.ry) * local;
-        }
+        const [px, py] = press && !reduced ? deformPress(x, y, press, softness, region) : [0, 0];
         position[i] = x + dx + px; position[i + 1] = y + dy + py;
       }
       gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer); gl.bufferSubData(gl.ARRAY_BUFFER, 0, position);
