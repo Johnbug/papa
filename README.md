@@ -41,6 +41,25 @@ Use `npm run dev:vercel` for the Vite development server. User-selected images r
 
 The Vercel React entry includes `@vercel/analytics/react` for visitor and page-view statistics. Enable **Web Analytics** in the Vercel project dashboard, deploy the latest commit, and visit the site to begin collecting data. No analytics keys or additional environment variables are needed.
 
-Analytics is included only in the Vercel entry. No custom gameplay events, uploaded images, or filenames are sent by the app. Image handling remains local to the browser.
+Analytics is initialized only in the Vercel entry. Custom events require a Vercel Pro or Enterprise plan; see [Vercel custom events](https://vercel.com/docs/analytics/custom-events). After deployment, open the project's Web Analytics events panel to inspect the following events. No uploaded images, filenames, blob URLs, crop coordinates, or error messages are included. Image handling remains local to the browser.
+
+| Event | Trigger / properties |
+| --- | --- |
+| `toy_slap` | Each successful pat; image category and input method. Pointer down, misses, holds, drags, and cancelled gestures do not count as pats. |
+| `toy_knead` | Once on release of a completed hold/drag; image category and input method. |
+| `image_change` | Switching images; `from` / `to` categories (`peach`, `shorts`, `custom`). Includes applying a custom image. |
+| `upload_click` | Opening a file picker; current image category and `guide` / `editor` location. |
+| `upload_selected` | Selecting a file; `accepted` indicates basic type/size validation, not decoding success. Cancelling the file picker produces no selection event. |
+| `editor_open` | Successfully decoding an image into the editor; source `upload` / `adjust`. Replacing an image inside the editor also emits this event. |
+| `editor_action` | Adjust button, image/region tab changes, reset crop, or apply button. |
+| `image_applied` | Successfully applying an image; source `upload` / `adjust`. |
+| `editor_close` | Closing the editor; outcome `applied` / `cancelled`. |
+| `image_error` | Validation, decoding, or apply failure; fixed step name only. |
+| `sound_toggle` | New enabled state and `header` / `controls` location. |
+| `softness_change` | Committed slider value; does not emit for every drag movement. |
+| `game_reset` | Explicit reset button; current image category. Automatic resets during image changes do not emit this event. |
+| `home_click` | Brand/home link; current image category. |
+
+Each completed pat or knead emits one event without sampling. Input methods distinguish mouse, touch, pen, keyboard, and the optional agent action, so automated actions can be filtered out. Analytics errors are isolated from gameplay. Local Vercel development uses the SDK's debug mode; production collection and dashboard delivery still need verification on the deployed project.
 
 The optional feature-detected WebMCP action `pat_peach` accepts `{ "side": "left" }` or `{ "side": "right" }`. A supported browser validation context was unavailable during implementation, so its live registration and execution have not been verified. Browser visual and interaction QA were not requested; validation covered type checking, the production build, HTTP rendering, and the deformation behavior tests.

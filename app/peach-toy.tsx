@@ -6,6 +6,7 @@ import { DEFAULT_IMAGE, containsPoint, constrainPoint, type ToyImage } from '@/l
 import { createPeachRenderer } from '@/lib/peach-renderer';
 import { createSlapAudio } from '@/lib/slap-audio';
 import { beginGesture, moveGesture, finishGesture, type Gesture } from '@/lib/gesture';
+import { imageKind, pointerKind, trackEvent, type InputKind } from '@/lib/analytics';
 
 export type ToyHandle = { reset(): void };
 type Burst = { id: number; x: number; y: number; text: string };
@@ -39,7 +40,7 @@ export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean
     if (hand.current) { hand.current.style.left = `${x * 100}%`; hand.current.style.top = `${y * 100}%`; }
   }
 
-  function slap(x: number, y: number, force = 1) {
+  function slap(x: number, y: number, force = 1, input: InputKind = 'keyboard') {
     if (!containsPoint(x, y, options.current.image.region)) return false;
     hits.current = [...hits.current.slice(-7), { x, y, force, time: performance.now() / 1000 }];
     if (options.current.sound) {
@@ -53,6 +54,7 @@ export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean
       { transform: 'translate(-43%, -48%) rotate(-18deg) scale(1)' },
     ], { duration: 230, easing: 'ease-out' });
     setBursts(b => [...b.slice(-5), { id, x, y, text: ['啪！', '啵～', '啪叽', 'PAP!'][id % 4] }]);
+    trackEvent('toy_slap', { image: imageKind(options.current.image), input });
     options.current.onHit(); wake.current();
     return true;
   }
@@ -104,7 +106,7 @@ export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean
       execute(input: unknown) {
         if (!input || typeof input !== 'object' || !('side' in input) || (input.side !== 'left' && input.side !== 'right') || Object.keys(input).length !== 1) throw new Error('side must be left or right');
         const region = options.current.image.region;
-        flushSync(() => { action.current(region.cx + (input.side === 'left' ? -.5 : .5) * region.rx, region.cy); });
+        flushSync(() => { action.current(region.cx + (input.side === 'left' ? -.5 : .5) * region.rx, region.cy, 1, 'agent'); });
         return { patted: true, side: input.side };
       },
     }, { signal: lifecycle.signal })).catch(() => {}); } catch { /* Optional browser API. */ }
@@ -148,7 +150,8 @@ export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean
     const result = finishGesture(gesture.current, e.clientX, e.clientY, performance.now(), e.type !== 'pointerup');
     gesture.current = null;
     const p = press.current; p.active = false; setPressing(false);
-    if (result === 'slap') { const hit = point(e); slap(hit.x, hit.y, hitForce.current); }
+    if (result === 'slap') { const hit = point(e); slap(hit.x, hit.y, hitForce.current, pointerKind(e.pointerType)); }
+    if (result === 'knead') trackEvent('toy_knead', { image: imageKind(options.current.image), input: pointerKind(e.pointerType) });
     if (result === 'knead' && p.amount > .6) hits.current = [...hits.current.slice(-7), { x: p.x, y: p.y, time: performance.now() / 1000, force: p.amount * .6 }];
     if (e.pointerType === 'touch' || e.type !== 'pointerup') setHandVisible(false);
     wake.current();

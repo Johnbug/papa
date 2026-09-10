@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } fr
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { clamp, cropPlacement, regionFromCorners, validateUpload, type Region, type ToyImage, type ImageFraming } from '@/lib/image-settings';
+import { imageKind, trackEvent } from '@/lib/analytics';
 
 type Draft = { src: string; image: HTMLImageElement; owned: boolean };
 type Drag = { id: number; x: number; y: number; panX: number; panY: number; region: Region };
@@ -47,12 +48,21 @@ export function ImageCustomizer({ current, onApply, secondaryActions }: { curren
     if (draftRef.current?.owned) URL.revokeObjectURL(draftRef.current.src);
     draftRef.current = next; setDraft(next);
   }
-  function close() {
+  function close(applied = false) {
+    if (open) trackEvent('editor_close', { outcome: applied ? 'applied' : 'cancelled' });
     request.current++; drag.current = null; setOpen(false); setBusy(false); setError(''); replaceDraft(null);
   }
   useEffect(() => () => { request.current++; if (draftRef.current?.owned) URL.revokeObjectURL(draftRef.current.src); }, []);
 
-  function pickFile() { (open ? dialogInput.current : input.current)?.click(); }
+  function pickFile() {
+    trackEvent('upload_click', { image: imageKind(current), location: open ? 'editor' : 'guide' });
+    (open ? dialogInput.current : input.current)?.click();
+  }
+  function changeMode(value: string) {
+    if (value !== 'image' && value !== 'region') return;
+    if (value !== mode) trackEvent('editor_action', { action: value === 'image' ? 'image_tab' : 'region_tab' });
+    drag.current = null; setMode(value); setError('');
+  }
   async function load(src: string, owned: boolean, initial: Region, framing: ImageFraming = { zoom: 1, panX: 0, panY: 0 }) {
     const ticket = ++request.current;
     setBusy(true); setError('');
@@ -61,15 +71,17 @@ export function ImageCustomizer({ current, onApply, secondaryActions }: { curren
       if (ticket !== request.current) { if (owned) URL.revokeObjectURL(src); return; }
       replaceDraft({ src, image, owned });
       setZoom(framing.zoom); setPan({ x: framing.panX, y: framing.panY }); setRegion(initial); setMode('image'); setOpen(true);
+      trackEvent('editor_open', { source: owned ? 'upload' : 'adjust' });
     } catch (e) {
       if (owned) URL.revokeObjectURL(src);
-      if (ticket === request.current) setError(e instanceof Error ? e.message : '图片读取失败，请重试。');
+      if (ticket === request.current) { trackEvent('image_error', { step: 'decode' }); setError(e instanceof Error ? e.message : '图片读取失败，请重试。'); }
     } finally { if (ticket === request.current) setBusy(false); }
   }
   function selectFile(file?: File) {
     if (!file) return;
     const problem = validateUpload(file);
-    if (problem) { setError(problem); return; }
+    trackEvent('upload_selected', { accepted: !problem });
+    if (problem) { trackEvent('image_error', { step: 'validation' }); setError(problem); return; }
     void load(URL.createObjectURL(file), true, INITIAL_REGION);
   }
   const placement = draft ? cropPlacement(draft.image.naturalWidth, draft.image.naturalHeight, zoom, pan.x, pan.y) : { x: 0, y: 0, width: 1, height: 1 };
@@ -108,6 +120,7 @@ export function ImageCustomizer({ current, onApply, secondaryActions }: { curren
 
   async function apply() {
     if (!draft || busy) return;
+    trackEvent('editor_action', { action: 'apply_click' });
     const ticket = ++request.current;
     setBusy(true); setError('');
     let outputURL: string | null = null;
@@ -121,9 +134,10 @@ export function ImageCustomizer({ current, onApply, secondaryActions }: { curren
       if (ticket !== request.current) return;
       outputURL = URL.createObjectURL(blob);
       onApply({ src: outputURL, region: { ...region }, custom: true, original: { src: draft.src, zoom, panX: pan.x, panY: pan.y } });
+      trackEvent('image_applied', { source: draft.owned ? 'upload' : 'adjust' });
       draft.owned = false;
-      close();
-    } catch (e) { if (outputURL) URL.revokeObjectURL(outputURL); if (ticket === request.current) { setError(e instanceof Error ? e.message : '图片处理失败，请重试。'); setBusy(false); } }
+      close(true);
+    } catch (e) { if (outputURL) URL.revokeObjectURL(outputURL); if (ticket === request.current) { trackEvent('image_error', { step: 'apply' }); setError(e instanceof Error ? e.message : '图片处理失败，请重试。'); setBusy(false); } }
   }
 
   function setRegionSize(axis: 'rx' | 'ry', value: number) {
@@ -134,7 +148,7 @@ export function ImageCustomizer({ current, onApply, secondaryActions }: { curren
     <input ref={input} className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" aria-label="选择自定义图片" onChange={e => { selectFile(e.target.files?.[0]); e.target.value = ''; }} />
     <div className="image-actions">
       <button className="upload-button" onClick={pickFile} disabled={busy}><ImagePlus size={17} />{busy && !open ? '读取中…' : current.custom ? '换一张图片' : '上传自己的图片'}</button>
-      {current.custom && <button className="image-text-button" disabled={busy} onClick={() => void load(current.original?.src ?? current.src, false, current.region, current.original)}><SlidersHorizontal size={15} />调整</button>}
+      {current.custom && <button className="image-text-button" disabled={busy} onClick={() => { trackEvent('editor_action', { action: 'adjust_click' }); void load(current.original?.src ?? current.src, false, current.region, current.original); }}><SlidersHorizontal size={15} />调整</button>}
       {secondaryActions}
     </div>
     <p className="image-privacy">仅在本机处理 · 不上传服务器 · 刷新后清除</p>
@@ -145,7 +159,7 @@ export function ImageCustomizer({ current, onApply, secondaryActions }: { curren
         <DialogClose className="image-dialog-close" aria-label="关闭图片调整"><X size={20} /></DialogClose>
         <DialogTitle className="image-dialog-title">让你的图片动起来</DialogTitle>
         <DialogDescription className="image-dialog-description">调整构图，再圈出想拍的地方。图片会留在你的浏览器里。</DialogDescription>
-        <Tabs value={mode} onValueChange={value => { drag.current = null; setMode(String(value)); setError(''); }} className="image-editor-tabs">
+        <Tabs value={mode} onValueChange={value => changeMode(String(value))} className="image-editor-tabs">
           <TabsList className="image-mode-tabs"><TabsTrigger value="image"><Move size={16} />1. 调整图片</TabsTrigger><TabsTrigger value="region"><Scan size={16} />2. 选择拍打区域</TabsTrigger></TabsList>
           <div className="image-editor-body">
             <div>
@@ -161,7 +175,7 @@ export function ImageCustomizer({ current, onApply, secondaryActions }: { curren
                 <Setting label="缩放" value={zoom} min={1} max={3} step={.01} onChange={setZoom} disabled={busy} />
                 <Setting label="左右位置" value={pan.x} min={-1} max={1} step={.01} disabled={busy || placement.width <= 1.001} onChange={x => setPan(p => ({ ...p, x }))} />
                 <Setting label="上下位置" value={pan.y} min={-1} max={1} step={.01} disabled={busy || placement.height <= 1.001} onChange={y => setPan(p => ({ ...p, y }))} />
-                <button className="image-secondary-button" disabled={busy} onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}>重置构图</button>
+                <button className="image-secondary-button" disabled={busy} onClick={() => { trackEvent('editor_action', { action: 'reset_crop' }); setZoom(1); setPan({ x: 0, y: 0 }); }}>重置构图</button>
                 <p className="editor-tip">建议让主体尽量占满画面，效果更明显。</p>
               </TabsContent>
               <TabsContent value="region">
@@ -176,7 +190,7 @@ export function ImageCustomizer({ current, onApply, secondaryActions }: { curren
           </div>
         </Tabs>
         {error && <p role="alert" className="image-error">{error}</p>}
-        <div className="image-dialog-actions"><button className="image-secondary-button" disabled={busy} onClick={pickFile}>换一张</button><span>JPG / PNG / WebP · 最大 20 MB</span><button className="image-apply-button" disabled={busy || !draft} onClick={mode === 'image' ? () => setMode('region') : () => void apply()}>{busy ? '处理中…' : mode === 'image' ? '下一步：选区域' : '用这张，开始拍'}</button></div>
+        <div className="image-dialog-actions"><button className="image-secondary-button" disabled={busy} onClick={pickFile}>换一张</button><span>JPG / PNG / WebP · 最大 20 MB</span><button className="image-apply-button" disabled={busy || !draft} onClick={mode === 'image' ? () => changeMode('region') : () => void apply()}>{busy ? '处理中…' : mode === 'image' ? '下一步：选区域' : '用这张，开始拍'}</button></div>
       </DialogContent>
     </Dialog>
   </div>;
