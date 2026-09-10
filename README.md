@@ -18,4 +18,23 @@ Files are decoded and cropped entirely in the browser, with no upload requests o
 - `npx tsc --noEmit`
 - `node --experimental-strip-types --test lib/*.test.ts`
 
+## Vercel deployment
+
+The repository includes a separate static Vite entry that reuses the game, image editor, styles, and assets. The original Vinext / Cloudflare build remains available through `npm run build`.
+
+1. In Vercel, choose **Add New → Project** and import `Johnbug/papa`.
+2. Keep the root directory at the repository root. The checked-in `vercel.json` sets the Vite framework, install command `npm ci`, build command `npm run build:vercel`, and output directory `dist-vercel`.
+3. Deploy. No environment variables, database, or server-side image storage are required. After connecting the repository, pushes to the production branch `main` trigger new deployments.
+
+If importing a project that already has manual build overrides, align them with the settings above. This is a static Vite deployment, not a Next.js framework deployment.
+
+To verify the static build locally:
+
+```sh
+npm run build:vercel
+npm run preview:vercel
+```
+
+Use `npm run dev:vercel` for the Vite development server. User-selected images remain entirely in the browser and are never included in deployment output.
+
 The optional feature-detected WebMCP action `pat_peach` accepts `{ "side": "left" }` or `{ "side": "right" }`. A supported browser validation context was unavailable during implementation, so its live registration and execution have not been verified. Browser visual and interaction QA were not requested; validation covered type checking, the production build, HTTP rendering, and the deformation behavior tests.
