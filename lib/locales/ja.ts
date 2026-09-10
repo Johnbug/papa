@@ -32,6 +32,6 @@ export const ja: Messages = {
   invalidType: 'JPG、PNG、WebP の画像を選んでください。', emptyFile: 'この画像ファイルは空です。別の画像を選んでください。', oversizedFile: '画像が 20 MB を超えています。小さい画像を選んでください。',
   invalidDimensions: '画像のサイズが無効です。別の画像を選んでください。', oversizedDimensions: '画像の解像度が高すぎます。縮小してから、もう一度お試しください。', decodeFailed: '画像を読み込めませんでした。JPG、PNG、WebP の画像をお試しください。',
   regionTooSmall: '範囲が小さすぎます。もう少し広く選んでください。', canvasUnavailable: 'ブラウザで画像を処理できませんでした。もう一度お試しください。', applyFailed: '画像を処理できませんでした。別の画像をお試しください。',
-  toyLabel: 'クリックして離すとタップ、長押しやドラッグでむにゅっと押せます。スペースキーやエンターキーでもタップできます。', customAlt: 'あなたが選んだ画像', peachAlt: 'やわらかくてぷにぷにしたピンクの桃', modelAlt: '透けないピンクのスポーツショーツを着た架空の成人女性の後ろ姿',
+  toyLabel: 'クリックして離すとタップ、長押しやドラッグでむにゅっと押せます。スペースキーやエンターキーでもタップできます。', customAlt: 'あなたが選んだ画像', peachAlt: 'やわらかくてぷにぷにしたピンクの桃', modelAlt: '透けない青いジーンズを着た架空の成人女性の後ろ姿',
   hit1: 'ぽん！', hit2: 'ぷにっ', hit3: 'むにゅっ', hit4: 'PAP!',
 };

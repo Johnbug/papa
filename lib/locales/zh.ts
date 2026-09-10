@@ -30,7 +30,7 @@ export const zh = {
   invalidType: '请选择 JPG、PNG 或 WebP 图片。', emptyFile: '这张图片是空文件，请重新选择。', oversizedFile: '图片超过 20 MB，请换一张小一点的图片。',
   invalidDimensions: '图片尺寸无效，请重新选择。', oversizedDimensions: '图片分辨率过高，请缩小后重试。', decodeFailed: '无法读取这张图片，请尝试 JPG、PNG 或 WebP 格式。',
   regionTooSmall: '选区太小了，请拖出稍大一点的范围。', canvasUnavailable: '浏览器暂时无法处理图片，请重试。', applyFailed: '图片处理失败，请换一张重试。',
-  toyLabel: '点击并松开拍打，长按或拖动揉捏；键盘按空格或回车也可拍打', customAlt: '你选择的自定义图片', peachAlt: '一颗软乎乎的粉色蜜桃', modelAlt: '穿粉色运动短裤的虚构成年女性造型背面',
+  toyLabel: '点击并松开拍打，长按或拖动揉捏；键盘按空格或回车也可拍打', customAlt: '你选择的自定义图片', peachAlt: '一颗软乎乎的粉色蜜桃', modelAlt: '穿蓝色牛仔裤的虚构成年女性造型背面',
   hit1: '啪！', hit2: '啵～', hit3: '啪叽', hit4: 'PAP!',
 };
 export type Messages = { [Key in keyof typeof zh]: string };
