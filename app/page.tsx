@@ -1,10 +1,10 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { Hand, Volume2, VolumeX, RotateCcw, ArrowUpRight, Sparkles } from 'lucide-react';
+import { Hand, Volume2, VolumeX, RotateCcw, ArrowUpRight, ArrowRight, Sparkles } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { PeachToy, type ToyHandle } from './peach-toy';
 import { ImageCustomizer } from './image-customizer';
-import { DEFAULT_IMAGE, type ToyImage } from '@/lib/image-settings';
+import { DEFAULT_IMAGE, SHORTS_IMAGE, type ToyImage } from '@/lib/image-settings';
 
 export default function Home() {
   const toy = useRef<ToyHandle>(null);
@@ -14,6 +14,7 @@ export default function Home() {
   const [combo, setCombo] = useState(0);
   const [best, setBest] = useState(0);
   const [toyImage, setToyImage] = useState<ToyImage>(DEFAULT_IMAGE);
+  const stage = toyImage.custom ? 2 : toyImage.src === DEFAULT_IMAGE.src ? 0 : 1;
   const last = useRef(0);
   const chain = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -52,7 +53,17 @@ export default function Home() {
           <div className="touch-note" aria-hidden="true"><ArrowUpRight size={34} strokeWidth={1.1} /><span>别客气，拍这里</span></div>
         </div>
         <div className="play-hint"><Hand size={17} strokeWidth={1.6} /><span>点击拍一拍 <i>·</i> 按住揉一揉 <i>·</i> 连点更解压</span></div>
-        <ImageCustomizer current={toyImage} onApply={changeImage} onRestore={() => changeImage(DEFAULT_IMAGE)} />
+        <section className="experience-guide" aria-label="体验引导">
+          <ol className="experience-steps">
+            {['拍拍蜜桃', '试试臀部', '自己上传'].map((label, index) => <li key={label} className={index === stage ? 'active' : index < stage ? 'done' : ''} aria-current={index === stage ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}
+          </ol>
+          <div className="experience-copy" aria-live="polite">
+            <h2>{stage === 0 ? count > 0 ? '手感不错？换个主角试试' : '先和这颗蜜桃打个招呼' : stage === 1 ? '换成你的图片，也能这样拍' : '现在，是你的专属软乎乎'}</h2>
+            <p>{stage === 0 ? '拍拍、揉揉，玩够了再换个新手感。' : stage === 1 ? '选一张喜欢的图片，圈出想拍的地方。' : '继续拍一拍，或调整图片和拍打范围。'}</p>
+          </div>
+          {stage === 0 ? <button className="guide-next" onClick={() => changeImage(SHORTS_IMAGE)}>试试臀部图片<ArrowRight size={17} /></button> : <ImageCustomizer key={toyImage.src} current={toyImage} onApply={changeImage} />}
+          {stage > 0 && <div className="experience-back"><button className="image-text-button" onClick={() => changeImage(DEFAULT_IMAGE)}>回到蜜桃</button>{stage === 2 && <button className="image-text-button" onClick={() => changeImage(SHORTS_IMAGE)}>换回臀部图片</button>}</div>}
+        </section>
         <div className="controls">
           <div className="soft-control"><div className="control-title"><span>软糯度</span><span className="soft-value">{softness < 35 ? '弹弹的' : softness < 75 ? '刚刚好' : '糯叽叽'}</span></div><div className="slider-row"><span>Q 弹</span><Slider aria-label="软糯度" min={0} max={100} value={[softness]} onValueChange={v => setSoftness(Array.isArray(v) ? v[0] : v)} /><span>软糯</span></div></div>
           <span className="control-divider" />

@@ -2,7 +2,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type PointerEvent } from 'react';
 import { flushSync } from 'react-dom';
 import { type Impact } from '@/lib/soft-body';
-import { containsPoint, constrainPoint, type ToyImage } from '@/lib/image-settings';
+import { DEFAULT_IMAGE, containsPoint, constrainPoint, type ToyImage } from '@/lib/image-settings';
 import { createPeachRenderer } from '@/lib/peach-renderer';
 import { createSlapAudio } from '@/lib/slap-audio';
 import { beginGesture, moveGesture, finishGesture, type Gesture } from '@/lib/gesture';
@@ -98,7 +98,7 @@ export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean
     if (!context?.registerTool) return;
     const lifecycle = new AbortController();
     try { void Promise.resolve(context.registerTool({
-      name: 'pat_peach', description: 'Pat the left or right side of the clothed mannequin once, with the same animation, sound and score update as clicking it.',
+      name: 'pat_peach', description: 'Pat the left or right side of the current image once, with the same animation, sound and score update as clicking it.',
       inputSchema: { type: 'object', properties: { side: { type: 'string', enum: ['left', 'right'] } }, required: ['side'], additionalProperties: false },
       annotations: { readOnlyHint: false, untrustedContentHint: false },
       execute(input: unknown) {
@@ -155,7 +155,7 @@ export const PeachToy = forwardRef<ToyHandle, { softness: number; sound: boolean
   }
   const region = props.image.region;
   return <button className={`toy-button ${props.image.custom ? 'custom-image' : ''} ${ready ? '' : 'fallback'} ${pressing ? 'pressing' : ''} ${handReady ? 'has-hand' : ''}`} aria-label="点击并松开拍打，长按或拖动揉捏；键盘按空格或回车也可拍打" onPointerEnter={e => { const p = point(e); positionHand(p.x, p.y, e.pointerType); }} onPointerLeave={() => setHandVisible(false)} onPointerDown={down} onPointerMove={move} onPointerUp={release} onPointerCancel={release} onLostPointerCapture={release} onClick={e => { if (e.detail === 0) slap(region.cx - region.rx * .4, region.cy); }}>
-    <img src={props.image.src} className={`toy-image ${ready ? 'hidden' : ''}`} alt={props.image.custom ? '你选择的自定义图片' : '穿粉色运动短裤的成年女性人台背面造型'} draggable={false} />
+    <img src={props.image.src} className={`toy-image ${ready ? 'hidden' : ''}`} alt={props.image.custom ? '你选择的自定义图片' : props.image.src === DEFAULT_IMAGE.src ? '一颗软乎乎的粉色蜜桃' : '穿粉色运动短裤的成年女性人台背面造型'} draggable={false} />
     <canvas ref={canvas} aria-hidden="true" />
     {props.image.custom && <span className="custom-region-guide" aria-hidden="true" style={{ left: `${(region.cx - region.rx) * 100}%`, top: `${(region.cy - region.ry) * 100}%`, width: `${region.rx * 200}%`, height: `${region.ry * 200}%` }} />}
     <img ref={hand} src="/hand.png" className={`hand-cursor ${handVisible && handReady ? 'visible' : ''}`} alt="" aria-hidden="true" draggable={false} onLoad={() => setHandReady(true)} />

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import { ImagePlus, Move, Scan, SlidersHorizontal, Undo2, X } from 'lucide-react';
+import { ImagePlus, Move, Scan, SlidersHorizontal, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
@@ -28,7 +28,7 @@ function Setting({ label, value, min, max, step = 1, onChange, disabled = false 
   return <label className="image-setting"><span>{label}</span><Slider aria-label={label} value={[value]} min={min} max={max} step={step} disabled={disabled} onValueChange={v => onChange(Array.isArray(v) ? v[0] : v)} /></label>;
 }
 
-export function ImageCustomizer({ current, onApply, onRestore }: { current: ToyImage; onApply(image: ToyImage): void; onRestore(): void }) {
+export function ImageCustomizer({ current, onApply }: { current: ToyImage; onApply(image: ToyImage): void }) {
   const input = useRef<HTMLInputElement>(null);
   const dialogInput = useRef<HTMLInputElement>(null);
   const draftRef = useRef<Draft | null>(null);
@@ -134,7 +134,7 @@ export function ImageCustomizer({ current, onApply, onRestore }: { current: ToyI
     <input ref={input} className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" aria-label="选择自定义图片" onChange={e => { selectFile(e.target.files?.[0]); e.target.value = ''; }} />
     <div className="image-actions">
       <button className="upload-button" onClick={pickFile} disabled={busy}><ImagePlus size={17} />{busy && !open ? '读取中…' : current.custom ? '换一张图片' : '上传自己的图片'}</button>
-      {current.custom && <><button className="image-text-button" disabled={busy} onClick={() => void load(current.original?.src ?? current.src, false, current.region, current.original)}><SlidersHorizontal size={15} />调整</button><button className="image-text-button" disabled={busy} onClick={onRestore}><Undo2 size={15} />恢复默认</button></>}
+      {current.custom && <button className="image-text-button" disabled={busy} onClick={() => void load(current.original?.src ?? current.src, false, current.region, current.original)}><SlidersHorizontal size={15} />调整</button>}
     </div>
     <p className="image-privacy">仅在本机处理 · 不上传服务器 · 刷新后清除</p>
     {!open && error && <p role="alert" className="image-error">{error}</p>}

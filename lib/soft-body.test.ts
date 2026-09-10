@@ -8,7 +8,8 @@ test('background clicks miss while both peach lobes accept hits', () => {
   assert.equal(isPeach(.02, .02), false);
   assert.equal(isPeach(.5, .98), false);
   assert.equal(isPeach(.5, .2), false);
-  assert.equal(isPeach(.4, .8), false);
+  assert.equal(isPeach(.4, .8), true);
+  assert.equal(isPeach(.4, .95), false);
 });
 const hit: Impact = { x: .3, y: .55, time: 0, force: 1 };
 test('a hit deforms its own lobe more than the opposite side', () => {

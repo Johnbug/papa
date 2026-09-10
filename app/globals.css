@@ -45,6 +45,20 @@ h1>span { display: block; color: #d95b6c; font-weight: 650; }
 .custom-image:hover .custom-region-guide { opacity: .5; }
 .custom-image.pressing .custom-region-guide { opacity: 0; }
 .image-customizer { z-index: 3; margin: -10px 0 22px; text-align: center; max-width: 100%; }
+.experience-guide { width: 484px; max-width: 100%; padding: 20px; margin: -7px 0 20px; text-align: center; border: 1px solid #eccbc47a; border-radius: 22px; background: #fffaf780; z-index: 3; }
+.experience-steps { display: flex; justify-content: center; gap: 20px; list-style: none; margin: 0; padding: 0; }
+.experience-steps li { display: flex; align-items: center; gap: 6px; color: #a68a80; font-size: 11px; white-space: nowrap; }
+.experience-steps li>span { width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: #f5e7e0; font-size: 10px; }
+.experience-steps li.active { color: #b94e63; font-weight: 600; }
+.experience-steps li.active>span { background: #d66179; color: #fff; }
+.experience-steps li.done>span { background: #f1d5d8; color: #b94e63; }
+.experience-copy h2 { margin: 17px 0 6px; font-size: 17px; font-weight: 600; }
+.experience-copy p { margin: 0 0 16px; font-size: 12px; color: #9c746a; line-height: 1.7; }
+.guide-next, .experience-guide .upload-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid #d66179; border-radius: 12px; padding: 11px 18px; background: #d66179; color: #fff; font-size: 14px; }
+.guide-next:hover, .experience-guide .upload-button:hover { background: #c4526a; }
+.experience-guide .image-customizer { margin: 0; }
+.experience-back { display: flex; justify-content: center; gap: 18px; margin-top: 7px; }
+@media(max-width:600px) { .experience-guide { padding: 18px 14px; border-radius: 19px; } .experience-steps { gap: 14px; } .experience-copy h2 { font-size: 16px; } }
 .image-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
 .upload-button, .image-text-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border-radius: 12px; padding: 10px 14px; background: #fffaf7; color: #b45566; border: 1px solid #eccbc4; font-size: 14px; }
 .image-text-button { background: transparent; border-color: transparent; padding: 8px 3px; font-size: 12px; }
