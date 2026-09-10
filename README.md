@@ -37,4 +37,10 @@ npm run preview:vercel
 
 Use `npm run dev:vercel` for the Vite development server. User-selected images remain entirely in the browser and are never included in deployment output.
 
+### Vercel Web Analytics
+
+The Vercel React entry includes `@vercel/analytics/react` for visitor and page-view statistics. Enable **Web Analytics** in the Vercel project dashboard, deploy the latest commit, and visit the site to begin collecting data. No analytics keys or additional environment variables are needed.
+
+Analytics is included only in the Vercel entry. No custom gameplay events, uploaded images, or filenames are sent by the app. Image handling remains local to the browser.
+
 The optional feature-detected WebMCP action `pat_peach` accepts `{ "side": "left" }` or `{ "side": "right" }`. A supported browser validation context was unavailable during implementation, so its live registration and execution have not been verified. Browser visual and interaction QA were not requested; validation covered type checking, the production build, HTTP rendering, and the deformation behavior tests.
